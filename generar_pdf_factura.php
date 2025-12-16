@@ -60,7 +60,7 @@ header('Content-Type: text/html; charset=UTF-8');
         }
 
         .header {
-            background: linear-gradient(135deg, #4e73df, #224abe);
+            background: #0f172a;
             color: white;
             padding: 20px;
             margin-bottom: 20px;

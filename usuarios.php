@@ -176,7 +176,7 @@ $usuarios = $conn->query("SELECT * FROM usuarios ORDER BY id DESC");
         }
 
         .modal-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+            background: var(--primary-color);
             color: white;
         }
 

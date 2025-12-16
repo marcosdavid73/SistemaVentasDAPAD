@@ -39,31 +39,23 @@ $detalles = $stmt_det->get_result();
     <title>Factura <?php echo $factura['numero_factura']; ?> - Sistema de Ventas</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="style-minimal.css" rel="stylesheet">
     <style>
-        :root {
-            --primary: #4e73df;
-            --success: #1cc88a;
-        }
-
-        body {
-            font-family: 'Nunito', sans-serif;
-            background-color: #f8f9fc;
-        }
-
         .factura-container {
             max-width: 900px;
             margin: 2rem auto;
             background: white;
             padding: 2rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .factura-header {
-            background: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
+            background: var(--primary-color);
             color: white;
             padding: 2rem;
-            border-radius: 0.35rem;
+            border-radius: 8px;
             margin-bottom: 2rem;
         }
 
