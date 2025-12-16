@@ -120,8 +120,23 @@ $usuarios = $conn->query("SELECT * FROM usuarios ORDER BY id DESC");
     <title>Gestión de Usuarios - Sistema de Ventas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style-minimal.css">
+    <link rel="stylesheet" href="style-minimal.css?v=2">
     <style>
+        #wrapper {
+            display: flex;
+        }
+
+        #sidebar-wrapper {
+            min-height: 100vh;
+            width: 224px;
+            background: var(--primary-color);
+        }
+
+        #content-wrapper {
+            flex: 1;
+            min-width: 0;
+        }
+
         .navbar {
             background: var(--primary-color);
         }
@@ -185,38 +200,60 @@ $usuarios = $conn->query("SELECT * FROM usuarios ORDER BY id DESC");
 </head>
 
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="index.php">
-                <i class="fas fa-cash-register me-2"></i>Sistema de Ventas
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="dashboard.php">
-                            <i class="fas fa-home me-1"></i>Dashboard
+    <div id="wrapper">
+        <?php include 'sidebar.php'; ?>
+
+        <div id="content-wrapper">
+            <nav class="navbar navbar-expand topbar mb-4 static-top" style="display: flex; justify-content: space-between; align-items: center; padding: 0 1.5rem;">
+                <!-- 🔍 BÚSQUEDA -->
+                <div class="search-container" style="flex: 1; max-width: 600px; margin-right: 1rem;">
+                    <form class="d-none d-sm-inline-block form-inline my-2 my-md-0" style="width: 100%;" action="dashboard.php" method="GET">
+                        <div class="input-group">
+                            <input type="text"
+                                class="form-control bg-light border-0 small"
+                                placeholder="Buscar productos, clientes, ventas..."
+                                name="buscar"
+                                style="border-radius: 10rem 0 0 10rem; padding-left: 1rem;">
+                            <button type="submit" class="btn btn-primary" style="border-radius: 0 10rem 10rem 0; padding: 0 1rem;">
+                                <i class="fas fa-search fa-sm"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small" style="margin-right: 0.5rem;">
+                                <strong><?php echo htmlspecialchars($_SESSION['nombre'] ?? 'Usuario'); ?></strong>
+                                <br>
+                                <small style="color: #858796;"><?php echo ucfirst($_SESSION['rol'] ?? ''); ?></small>
+                            </span>
+                            <i class="fas fa-user-circle fa-2x" style="color: #858796;"></i>
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <span class="nav-link">
-                            <i class="fas fa-user me-1"></i><?php echo $_SESSION['usuario_nombre']; ?>
-                        </span>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="cerrar_sesion.php">
-                            <i class="fas fa-sign-out-alt me-1"></i>Cerrar Sesión
-                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown" style="min-width: 200px;">
+                            <li><h6 class="dropdown-header" style="background: var(--primary-color); color: white; margin: -0.5rem -1rem 0.5rem; padding: 0.75rem 1rem;">
+                                <i class="fas fa-user-circle"></i> Mi Cuenta
+                            </h6></li>
+                            <li><a class="dropdown-item" href="index.php">
+                                <i class="fas fa-store fa-sm fa-fw mr-2" style="color: #4e73df; margin-right: 0.5rem;"></i>
+                                Ver Catálogo Público
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" style="pointer-events: none; opacity: 0.6;">
+                                <i class="fas fa-id-card fa-sm fa-fw mr-2" style="color: #858796; margin-right: 0.5rem;"></i>
+                                Mi Perfil (Próximamente)
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="cerrar_sesion.php">
+                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2" style="color: #e74a3b; margin-right: 0.5rem;"></i>
+                                Cerrar Sesión
+                            </a></li>
+                        </ul>
                     </li>
                 </ul>
-            </div>
-        </div>
-    </nav>
+            </nav>
 
-    <div class="container-fluid">
+            <div class="container-fluid">
         <?php if ($mensaje): ?>
             <div class="alert alert-<?php echo $tipo_mensaje; ?> alert-dismissible fade show" role="alert">
                 <i class="fas fa-<?php echo $tipo_mensaje === 'success' ? 'check-circle' : 'exclamation-triangle'; ?> me-2"></i>
@@ -431,6 +468,9 @@ $usuarios = $conn->query("SELECT * FROM usuarios ORDER BY id DESC");
             }
         }
     </script>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

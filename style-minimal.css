@@ -118,6 +118,13 @@ body {
     font-weight: 700;
     font-size: 1.2rem;
     letter-spacing: -0.03em;
+    color: white !important;
+    text-decoration: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 1rem;
+    height: 4.375rem;
 }
 
 .sidebar-heading {

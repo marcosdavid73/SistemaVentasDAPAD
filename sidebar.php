@@ -3,20 +3,13 @@ if (!function_exists('tiene_permiso')) {
     require_once 'config.php';
 }
 ?>
-<!-- DEBUG: Rol = <?php echo isset($_SESSION['rol']) ? $_SESSION['rol'] : 'NO DEFINIDO'; ?> | es_admin = <?php echo es_admin() ? 'SI' : 'NO'; ?> -->
 <!-- Sidebar -->
 <ul class="navbar-nav" id="sidebar-wrapper">
-    <a class="sidebar-brand" href="index.php">
-        <div class="sidebar-brand-icon"><i class="fas fa-shopping-cart"></i></div>
-        <div class="sidebar-brand-text mx-3">VENTAS</div>
+    <a class="sidebar-brand" href="dashboard.php">
+        <div class="sidebar-brand-icon"><i class="fas fa-home"></i></div>
+        <div class="sidebar-brand-text mx-3">INICIO</div>
     </a>
     <hr class="sidebar-divider my-0" style="border-color: rgba(255,255,255,.2)">
-    <li class="nav-item">
-        <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>" href="dashboard.php">
-            <i class="fas fa-fw fa-tachometer-alt"></i><span>Dashboard</span>
-        </a>
-    </li>
-    <hr class="sidebar-divider" style="border-color: rgba(255,255,255,.2)">
     <div class="sidebar-heading" style="color: rgba(255,255,255,.5); padding: 0 1rem; font-size: 0.65rem; text-transform: uppercase; margin-top: 0.5rem;">Gestión</div>
     
     <?php if (tiene_permiso('productos')): ?>

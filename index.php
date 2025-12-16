@@ -52,7 +52,7 @@ $result = $stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo de Productos - Sistema de Ventas</title>
+    <title>LimpiaMax - Productos de Limpieza</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style-minimal.css">
@@ -181,9 +181,9 @@ $result = $stmt->get_result();
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="index.php">
-                <i class="fas fa-shopping-bag me-2"></i>Catálogo de Productos
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.php" style="font-size: 1.5rem; font-weight: 700;">
+                <i class="fas fa-spray-can me-2"></i>LimpiaMax
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -218,77 +218,58 @@ $result = $stmt->get_result();
         </div>
     </nav>
 
-    <div class="container">
-        <!-- Secciones de Categorías -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <h4 class="mb-3" style="font-weight: 600; color: var(--text-primary);">
-                    <i class="fas fa-th-large me-2"></i>Categorías
-                </h4>
-                <div class="category-pills">
-                    <a href="index.php" class="category-pill <?php echo empty($categoria_id) ? 'active' : ''; ?>">
-                        <i class="fas fa-border-all"></i>
-                        <span>Todos</span>
-                    </a>
-                    <?php 
-                    $categorias_temp = $conn->query($categorias_query);
-                    while ($cat = $categorias_temp->fetch_assoc()): 
-                        $icono = $cat['icono'] ?? 'fa-cube';
-                    ?>
-                        <a href="?categoria=<?php echo $cat['id']; ?>" 
-                           class="category-pill <?php echo $categoria_id == $cat['id'] ? 'active' : ''; ?>">
-                            <i class="fas <?php echo $icono; ?>"></i>
-                            <span><?php echo htmlspecialchars($cat['nombre']); ?></span>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar de Categorías -->
+            <div class="col-lg-2 col-md-3 mb-4">
+                <div style="position: sticky; top: 20px;">
+                    <h5 class="mb-3" style="font-weight: 600; color: var(--text-primary);">
+                        <i class="fas fa-th-large me-2"></i>Categorías
+                    </h5>
+                    <div class="list-group">
+                        <a href="index.php" class="list-group-item list-group-item-action <?php echo empty($categoria_id) ? 'active' : ''; ?>" style="border-radius: 8px; margin-bottom: 0.5rem;">
+                            <i class="fas fa-border-all me-2"></i>Todos los Productos
                         </a>
-                    <?php endwhile; ?>
+                        <?php 
+                        $categorias_temp = $conn->query($categorias_query);
+                        while ($cat = $categorias_temp->fetch_assoc()): 
+                            $icono = $cat['icono'] ?? 'fa-cube';
+                        ?>
+                            <a href="?categoria=<?php echo $cat['id']; ?>" 
+                               class="list-group-item list-group-item-action <?php echo $categoria_id == $cat['id'] ? 'active' : ''; ?>" style="border-radius: 8px; margin-bottom: 0.5rem;">
+                                <i class="fas <?php echo $icono; ?> me-2"></i><?php echo htmlspecialchars($cat['nombre']); ?>
+                            </a>
+                        <?php endwhile; ?>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Filtros -->
-        <div class="filter-section">
-            <form method="GET" class="row g-3 align-items-end">
-                <div class="col-md-6">
-                    <label class="form-label">
-                        <i class="fas fa-search me-2"></i>Buscar productos
-                    </label>
-                    <input type="text" class="form-control search-input" name="buscar"
-                        placeholder="Nombre, código o descripción..."
-                        value="<?php echo htmlspecialchars($busqueda); ?>">
+            <!-- Contenido Principal -->
+            <div class="col-lg-10 col-md-9">
+                <!-- Buscador -->
+                <div class="mb-4">
+                    <form method="GET" class="row g-2">
+                        <div class="col-md-10">
+                            <input type="text" class="form-control form-control-lg" name="buscar"
+                                placeholder="🔍 Buscar productos por nombre, código o descripción..."
+                                value="<?php echo htmlspecialchars($busqueda); ?>">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-search"></i> Buscar
+                            </button>
+                        </div>
+                        <?php if (!empty($busqueda)): ?>
+                            <div class="col-12">
+                                <a href="index.php<?php echo !empty($categoria_id) ? '?categoria='.$categoria_id : ''; ?>" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-times me-1"></i>Limpiar búsqueda
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                    </form>
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label">
-                        <i class="fas fa-filter me-2"></i>Filtrar por Categoría
-                    </label>
-                    <select class="form-select" name="categoria">
-                        <option value="">Todas las categorías</option>
-                        <?php 
-                        $categorias_select = $conn->query($categorias_query);
-                        while ($cat = $categorias_select->fetch_assoc()): 
-                        ?>
-                            <option value="<?php echo $cat['id']; ?>"
-                                <?php echo $categoria_id == $cat['id'] ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($cat['nombre']); ?>
-                            </option>
-                        <?php endwhile; ?>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-search me-2"></i>Filtrar
-                    </button>
-                </div>
-                <?php if (!empty($busqueda) || !empty($categoria_id)): ?>
-                    <div class="col-12">
-                        <a href="index.php" class="btn btn-outline-secondary btn-sm">
-                            <i class="fas fa-times me-2"></i>Limpiar filtros
-                        </a>
-                    </div>
-                <?php endif; ?>
-            </form>
-        </div>
 
-        <!-- Productos -->
+                <!-- Productos -->
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
             <?php if ($result->num_rows > 0): ?>
                 <?php while ($producto = $result->fetch_assoc()): ?>
@@ -358,9 +339,5 @@ $result = $stmt->get_result();
                 </div>
             <?php endif; ?>
         </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-
-</html>
+            </div>
+        </div>

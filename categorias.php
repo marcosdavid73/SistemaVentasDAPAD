@@ -187,11 +187,58 @@ $iconos_disponibles = [
         <?php include 'sidebar.php'; ?>
 
         <div id="content-wrapper" class="flex-fill">
-            <?php include 'topbar.php'; ?>
+            <nav class="navbar navbar-expand topbar mb-4 static-top" style="display: flex; justify-content: space-between; align-items: center; padding: 0 1.5rem;">
+                <!-- 🔍 BÚSQUEDA -->
+                <div class="search-container" style="flex: 1; max-width: 600px; margin-right: 1rem;">
+                    <form class="d-none d-sm-inline-block form-inline my-2 my-md-0" style="width: 100%;" action="dashboard.php" method="GET">
+                        <div class="input-group">
+                            <input type="text"
+                                class="form-control bg-light border-0 small"
+                                placeholder="Buscar productos, clientes, ventas..."
+                                name="buscar"
+                                style="border-radius: 10rem 0 0 10rem; padding-left: 1rem;">
+                            <button type="submit" class="btn btn-primary" style="border-radius: 0 10rem 10rem 0; padding: 0 1rem;">
+                                <i class="fas fa-search fa-sm"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small" style="margin-right: 0.5rem;">
+                                <strong><?php echo htmlspecialchars($_SESSION['nombre'] ?? 'Usuario'); ?></strong>
+                                <br>
+                                <small style="color: #858796;"><?php echo ucfirst($_SESSION['rol'] ?? ''); ?></small>
+                            </span>
+                            <i class="fas fa-user-circle fa-2x" style="color: #858796;"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown" style="min-width: 200px;">
+                            <li><h6 class="dropdown-header" style="background: var(--primary-color); color: white; margin: -0.5rem -1rem 0.5rem; padding: 0.75rem 1rem;">
+                                <i class="fas fa-user-circle"></i> Mi Cuenta
+                            </h6></li>
+                            <li><a class="dropdown-item" href="index.php">
+                                <i class="fas fa-store fa-sm fa-fw mr-2" style="color: #4e73df; margin-right: 0.5rem;"></i>
+                                Ver Catálogo Público
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" style="pointer-events: none; opacity: 0.6;">
+                                <i class="fas fa-id-card fa-sm fa-fw mr-2" style="color: #858796; margin-right: 0.5rem;"></i>
+                                Mi Perfil (Próximamente)
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="cerrar_sesion.php">
+                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2" style="color: #e74a3b; margin-right: 0.5rem;"></i>
+                                Cerrar Sesión
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
 
             <div class="container-fluid px-4 py-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="mb-0"><i class="fas fa-tags me-2"></i>Gestión de Categorías</h2>
+                    <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-tags me-2"></i>Gestión de Categorías</h1>
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCategoria">
                         <i class="fas fa-plus me-2"></i>Nueva Categoría
                     </button>
