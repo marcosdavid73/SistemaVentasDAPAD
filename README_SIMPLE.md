@@ -1,51 +1,50 @@
-# 🛒 Sistema de Ventas - Artículos de Limpieza
+# Sistema de Ventas - Artículos de Limpieza
 
-Sistema completo de gestión de ventas con catálogo público, control de inventario, facturación y reportes.
+Sistema web que armé para gestionar la venta de productos de limpieza. Tiene un catálogo donde la gente puede ver todos los productos disponibles sin necesidad de registrarse, y un panel de administración completo para manejar stock, ventas y reportes.
 
-## ✨ Características
+## Qué incluye
 
-- 🌐 Catálogo público sin autenticación
-- 📦 Gestión completa de productos con imágenes
-- 🏷️ Sistema de categorías con íconos personalizables
-- 👥 Multi-roles (Admin, Vendedor, Repositor, Cliente)
-- 💰 Registro de ventas y facturación
-- 📊 Reportes con gráficos interactivos
-- 🎨 Diseño minimalista (azul marino oscuro + Inter font)
+- Catálogo público donde cualquiera puede ver los productos
+- Administración de productos con fotos
+- Categorías organizadas por tipo de artículo con iconos
+- Diferentes roles de usuario (administrador, vendedor, repositor)
+- Sistema de ventas y facturación
+- Reportes con gráficos 
+- Diseño minimalista en azul oscuro
 
-## 🚀 Instalación Rápida
+## Instalación rápida
 
 ```bash
-# 1. Clonar repositorio
-git clone https://github.com/TU_USUARIO/sistema-ventas.git
+# Clonar el repo
+git clone https://github.com/marcosdavid73/SistemaVentasDAPAD.git
 
-# 2. Importar BD
+# Importar la base de datos
+# Usá phpMyAdmin o desde consola:
 mysql -u root -p sistema_ventas < database.sql
 
-# 3. Configurar
-cp config.example.php config.php
-# Editar config.php con tus datos de MySQL
+# Configurar
+# Copiá config.example.php a config.php y editalo con tus datos de MySQL
 
-# 4. Crear carpeta uploads
-mkdir -p uploads/productos
+# Listo! Entrá a http://localhost/sistema/login.php
 ```
 
-## 👤 Usuarios de Prueba
+## Usuarios para probar
 
-| Email | Contraseña | Rol |
-|-------|-----------|-----|
-| admin@sistema.com | admin123 | Administrador |
-| vendedor@sistema.com | admin123 | Vendedor |
-| repositor@sistema.com | admin123 | Repositor |
+Ya vienen algunos usuarios cargados en la base de datos:
 
-⚠️ **Cambiar contraseñas en producción**
+- **Admin**: admin@sistema.com / admin123
+- **Vendedor**: vendedor@sistema.com / admin123  
+- **Repositor**: repositor@sistema.com / admin123
 
-## 📋 Requisitos
+(Obviamente cambiales la contraseña si vas a usarlo en serio)
 
-- PHP 7.4+
-- MySQL 8.0+
-- Extensiones: mysqli, gd
+## Requisitos
 
-## 🏷️ Categorías Incluidas
+- PHP 7.4 o más nuevo
+- MySQL
+- Apache (XAMPP, Laragon o similar)
+
+## Categorías
 
 1. 🧹 Limpieza de Pisos
 2. 🍽️ Vajilla y Cocina

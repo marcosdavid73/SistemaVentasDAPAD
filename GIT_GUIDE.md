@@ -1,52 +1,65 @@
-# ==========================================
-# GUÍA PARA SUBIR A GIT
-# ==========================================
+# Comandos Git que uso
 
-# 1. Inicializar repositorio (si aún no está inicializado)
+Acá dejo algunos comandos de Git que me fueron útiles por si los necesito después.
+
+## Para empezar
+
+```bash
+# Iniciar git en una carpeta
 git init
 
-# 2. Agregar todos los archivos (respeta .gitignore)
+# Ver qué archivos están listos para subir
+git status
+
+# Agregar todos los archivos
 git add .
 
-# 3. Ver qué archivos se van a subir
-git status
+# Hacer el primer commit
+git commit -m "Primer commit del sistema"
 
-# 4. Hacer el primer commit
-git commit -m "Initial commit: Sistema de ventas completo con categorías"
+# Conectar con GitHub (primero crear el repo en GitHub)
+git remote add origin https://github.com/tuusuario/tuproyecto.git
 
-# 5. Conectar con GitHub (crear repositorio primero en GitHub)
-git remote add origin https://github.com/TU_USUARIO/sistema-ventas.git
-
-# 6. Subir todo
+# Subir todo
 git push -u origin master
+```
 
-# ==========================================
-# COMANDOS ÚTILES
-# ==========================================
+## Comandos del día a día
 
-# Ver estado del repositorio
+```bash
+# Ver cambios pendientes
 git status
 
-# Ver historial de commits
-git log --oneline
+# Agregar un archivo específico
+git add miarchivo.php
 
-# Crear una nueva rama
-git checkout -b nombre-rama
+# Hacer commit de los cambios
+git commit -m "Arreglé tal cosa"
 
-# Agregar solo archivos específicos
-git add archivo.php
-
-# Commit con mensaje
-git commit -m "Descripción del cambio"
-
-# Push a GitHub
+# Subir a GitHub
 git push
 
-# Pull (descargar cambios)
+# Bajar cambios si trabajas en equipo
 git pull
 
-# Ver archivos ignorados
-git status --ignored
+# Ver el historial
+git log --oneline
+```
+
+## Trabajar con ramas
+
+```bash
+# Crear una rama nueva
+git checkout -b nueva-funcionalidad
+
+# Cambiar de rama
+git checkout master
+
+# Ver todas las ramas
+git branch
+```
+
+Nada muy complicado, lo básico para no perder el código.
 
 # ==========================================
 # NOTAS IMPORTANTES

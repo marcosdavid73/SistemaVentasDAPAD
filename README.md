@@ -1,35 +1,41 @@
-# 📦 Sistema de Ventas - Guía de Instalación
+# Sistema de Ventas para Artículos de Limpieza
 
-## 🚀 Requisitos Previos
+Hola! Este es un sistema que hice para gestionar ventas de productos de limpieza. Incluye un catálogo público donde cualquiera puede ver los productos, y un panel de administración para manejar todo el inventario, ventas y reportes.
 
-- **XAMPP/WAMP/MAMP** o servidor local con:
-  - PHP 7.4 o superior
-  - MySQL 5.7 o superior
-  - Apache 2.4 o superior
+## Qué necesitas tener instalado
 
-## 📋 Pasos de Instalación
+Básicamente necesitas un servidor local, yo lo armé con Laragon pero funciona perfecto con XAMPP también:
+- PHP 7.4 o más nuevo
+- MySQL 
+- Un servidor Apache
 
-### 1. Configurar el Servidor Local
+## Cómo instalarlo
 
-1. Instala XAMPP desde [https://www.apachefriends.org/](https://www.apachefriends.org/)
-2. Inicia los servicios **Apache** y **MySQL** desde el panel de control de XAMPP
+### Paso 1: Descargar XAMPP
 
-### 2. Importar la Base de Datos
+Si no tenes ningún servidor local, bajate XAMPP de acá: https://www.apachefriends.org/
 
-1. Abre tu navegador y ve a [http://localhost/phpmyadmin](http://localhost/phpmyadmin)
-2. Haz clic en **"Nueva"** en el panel izquierdo
-3. Nombre de la base de datos: `sistema_ventas`
-4. Cotejamiento: `utf8mb4_general_ci`
-5. Haz clic en **"Crear"**
-6. Selecciona la base de datos `sistema_ventas`
-7. Ve a la pestaña **"Importar"**
-8. Haz clic en **"Seleccionar archivo"** y busca el archivo `sistema_ventas.sql`
-9. Haz clic en **"Continuar"**
-10. Espera a que termine la importación ✅
+Una vez instalado, abrí el panel de control y arrancá Apache y MySQL.
 
-### 3. Configurar la Conexión a la Base de Datos
+### Paso 2: Crear la base de datos
 
-El archivo `config.php` ya está configurado con los valores predeterminados:
+1. Andá a http://localhost/phpmyadmin en tu navegador
+2. Hacé click en "Nueva" para crear una base nueva
+3. Ponele de nombre: `sistema_ventas`
+4. En "Cotejamiento" elegí `utf8mb4_general_ci` 
+5. Dale a "Crear"
+6. Ahora entrá a la base que creaste
+7. Andá a la pestaña "Importar"
+8. Elegí el archivo `database.sql` que está en la carpeta del proyecto
+9. Dale a "Continuar" y esperá que termine de importar
+
+Listo, ya tenés toda la estructura de tablas, usuarios de prueba y las categorías cargadas.
+
+### Paso 3: Configurar la conexión
+
+Hay un archivo que se llama `config.example.php`, lo tenés que copiar y renombrar a `config.php`.
+
+Después abrilo y fijate estos datos:
 
 ```php
 define('DB_HOST', 'localhost');
@@ -38,21 +44,18 @@ define('DB_PASS', '');
 define('DB_NAME', 'sistema_ventas');
 ```
 
-**Si tu configuración es diferente:**
-- Abre el archivo `config.php`
-- Modifica los valores según tu configuración de MySQL
+Si tu MySQL tiene otro usuario o contraseña, cambialos ahí. Por defecto XAMPP usa `root` sin contraseña.
 
-### 4. Colocar los Archivos en el Servidor
+### Paso 4: Poner los archivos
 
-1. Copia toda la carpeta del proyecto
-2. Pégala en la carpeta `htdocs` de XAMPP
-   - Windows: `C:\xampp\htdocs\sistema`
-   - Mac: `/Applications/XAMPP/htdocs/sistema`
-   - Linux: `/opt/lampp/htdocs/sistema`
+Copiá toda la carpeta del proyecto y pegala en:
+- Si usas XAMPP en Windows: `C:\xampp\htdocs\sistema`
+- Si usas Laragon: `C:\laragon\www\sistema`
+- Mac: `/Applications/XAMPP/htdocs/sistema`
 
-### 5. Acceder al Sistema
+### Paso 5: Entrar al sistema
 
-Abre tu navegador y ve a:
+Abrí el navegador y andá a:
 ```
 http://localhost/sistema/login.php
 ```
