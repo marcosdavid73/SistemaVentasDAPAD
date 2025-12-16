@@ -1,3 +1,9 @@
+<?php
+if (!function_exists('tiene_permiso')) {
+    require_once 'config.php';
+}
+?>
+<!-- DEBUG: Rol = <?php echo isset($_SESSION['rol']) ? $_SESSION['rol'] : 'NO DEFINIDO'; ?> | es_admin = <?php echo es_admin() ? 'SI' : 'NO'; ?> -->
 <!-- Sidebar -->
 <ul class="navbar-nav" id="sidebar-wrapper">
     <a class="sidebar-brand" href="index.php">

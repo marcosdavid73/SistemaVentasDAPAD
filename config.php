@@ -63,9 +63,9 @@ function tiene_permiso($modulo)
     $rol = obtener_rol();
 
     $permisos = array(
-        'admin' => ['*'], // Acceso total
-        'vendedor' => ['ventas', 'clientes', 'facturas', 'caja', 'reportes_ver'],
-        'repositor' => ['productos', 'proveedores', 'reportes_ver'],
+        'admin' => ['*'],
+        'vendedor' => ['productos', 'clientes', 'proveedores', 'ventas', 'facturas', 'caja', 'reportes_ver'],
+        'repositor' => ['productos', 'clientes', 'proveedores', 'ventas', 'facturas', 'reportes_ver'],
         'cliente' => ['catalogo']
     );
 

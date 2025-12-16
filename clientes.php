@@ -164,70 +164,7 @@ $result_clientes = $conn->query($sql_clientes);
 
 <body>
     <div id="wrapper">
-        <!-- Sidebar -->
-        <ul class="navbar-nav" id="sidebar-wrapper">
-            <a class="sidebar-brand" href="index.php">
-                <div class="sidebar-brand-icon"><i class="fas fa-shopping-cart"></i></div>
-                <div class="sidebar-brand-text mx-3">VENTAS</div>
-            </a>
-            <hr class="sidebar-divider my-0" style="border-color: rgba(255,255,255,.2)">
-            <li class="nav-item">
-                <a class="nav-link active" href="index.php">
-                    <i class="fas fa-fw fa-tachometer-alt"></i><span>Dashboard</span>
-                </a>
-            </li>
-            <hr class="sidebar-divider" style="border-color: rgba(255,255,255,.2)">
-            <div class="sidebar-heading" style="color: rgba(255,255,255,.5); padding: 0 1rem; font-size: 0.65rem; text-transform: uppercase; margin-top: 0.5rem;">Gestión</div>
-            <li class="nav-item">
-                <a class="nav-link" href="productos.php">
-                    <i class="fas fa-fw fa-box"></i><span>Productos</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="clientes.php">
-                    <i class="fas fa-fw fa-users"></i><span>Clientes</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="proveedores.php">
-                    <i class="fas fa-fw fa-truck"></i><span>Proveedores</span>
-                </a>
-            </li>
-            <hr class="sidebar-divider" style="border-color: rgba(255,255,255,.2)">
-            <div class="sidebar-heading" style="color: rgba(255,255,255,.5); padding: 0 1rem; font-size: 0.65rem; text-transform: uppercase; margin-top: 0.5rem;">Operaciones</div>
-            <li class="nav-item">
-                <a class="nav-link" href="ventas.php">
-                    <i class="fas fa-fw fa-cash-register"></i><span>Ventas</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="facturas.php">
-                    <i class="fas fa-fw fa-file-invoice"></i><span>Facturas</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="caja.php">
-                    <i class="fas fa-fw fa-money-bill-wave"></i><span>Caja</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="cuentas_corrientes.php">
-                    <i class="fas fa-fw fa-file-invoice-dollar"></i><span>Cuentas Corrientes</span>
-                </a>
-            </li>
-            <hr class="sidebar-divider" style="border-color: rgba(255,255,255,.2)">
-            <li class="nav-item">
-                <a class="nav-link" href="reportes.php">
-                    <i class="fas fa-fw fa-chart-area"></i><span>Reportes</span>
-                </a>
-            </li>
-            <hr class="sidebar-divider" style="border-color: rgba(255,255,255,.2)">
-            <li class="nav-item">
-                <a class="nav-link" href="cerrar_sesion.php">
-                    <i class="fas fa-fw fa-sign-out-alt"></i><span>Cerrar Sesión</span>
-                </a>
-            </li>
-        </ul>
+        <?php include 'sidebar.php'; ?>
 
         <!-- Content -->
         <div id="content-wrapper">
