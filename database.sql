@@ -212,3 +212,54 @@ SELECT
 FROM movimientos_caja
 GROUP BY fecha_movimiento
 ORDER BY fecha_movimiento DESC;
+
+-- Tabla de categorías de productos
+CREATE TABLE IF NOT EXISTS categorias (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    descripcion TEXT,
+    icono_id INT,
+    orden INT DEFAULT 0,
+    activo TINYINT(1) DEFAULT 1,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla de iconos disponibles para categorías
+CREATE TABLE IF NOT EXISTS categorias_iconos (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(50) NOT NULL,
+    clase_icono VARCHAR(100) NOT NULL,
+    descripcion VARCHAR(200)
+);
+
+-- Insertar iconos disponibles
+INSERT INTO categorias_iconos (nombre, clase_icono, descripcion) VALUES
+('Escoba', 'fa-broom', 'Icono de escoba para limpieza'),
+('Fregadero', 'fa-sink', 'Icono de fregadero'),
+('Camiseta/Ropa', 'fa-shirt', 'Icono de ropa y lavandería'),
+('Inodoro', 'fa-toilet', 'Icono de baño y sanitarios'),
+('Spray', 'fa-spray-can', 'Icono de aerosol o spray'),
+('Jabón líquido', 'fa-pump-soap', 'Icono de jabón líquido'),
+('Caja de herramientas', 'fa-toolbox', 'Icono de herramientas y accesorios'),
+('Desinfectante', 'fa-pump-medical', 'Icono de desinfectante médico'),
+('Papel higiénico', 'fa-toilet-paper', 'Icono de papel higiénico'),
+('Cubo genérico', 'fa-cube', 'Icono genérico para otros productos'),
+('Botella', 'fa-bottle-droplet', 'Icono de botella con líquido'),
+('Guantes', 'fa-hands-bubbles', 'Icono de manos con espuma'),
+('Casa limpia', 'fa-house-chimney', 'Icono de casa'),
+('Basura', 'fa-trash-can', 'Icono de bote de basura'),
+('Esponja', 'fa-sponge', 'Icono de esponja'),
+('Burbujas', 'fa-soap', 'Icono de jabón con burbujas');
+
+-- Insertar categorías predefinidas
+INSERT INTO categorias (nombre, descripcion, icono_id, orden) VALUES
+('Limpieza de Pisos', 'Productos para limpiar y mantener pisos', 1, 1),
+('Vajilla y Cocina', 'Productos para lavar vajilla y limpieza de cocina', 2, 2),
+('Ropa y Lavandería', 'Detergentes y suavizantes para ropa', 3, 3),
+('Baño y Sanitarios', 'Productos para limpieza de baños', 4, 4),
+('Vidrios y Superficies', 'Limpiadores para vidrios y superficies', 5, 5),
+('Higiene Personal', 'Jabones y productos de higiene', 6, 6),
+('Accesorios y Utensilios', 'Escobas, trapos, guantes y más', 7, 7),
+('Desinfectantes', 'Productos desinfectantes y antibacteriales', 8, 8),
+('Papelería e Higiene', 'Papel higiénico, servilletas y toallas', 9, 9),
+('Otros', 'Otros productos de limpieza', 10, 10);
