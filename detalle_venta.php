@@ -40,111 +40,30 @@ $detalles = $stmt_det->get_result();
     <title>Detalle de Venta #<?php echo $venta_id; ?> - Sistema de Ventas</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="style-minimal.css" rel="stylesheet">
     <style>
-        :root {
-            --primary: #4e73df;
-            --success: #1cc88a;
-            --info: #36b9cc;
-            --warning: #f6c23e;
-            --danger: #e74a3b;
-        }
-
-        body {
-            font-family: 'Nunito', sans-serif;
-            background-color: #f8f9fc;
-        }
-
-        #wrapper {
-            display: flex;
-        }
-
-        #sidebar-wrapper {
-            min-height: 100vh;
-            width: 224px;
-            background: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
-        }
-
-        .sidebar-brand {
-            height: 4.375rem;
-            text-decoration: none;
-            font-size: 1rem;
-            font-weight: 800;
-            padding: 1.5rem 1rem;
-            text-align: center;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            padding: 1rem;
-            color: rgba(255, 255, 255, .8);
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .nav-link:hover,
-        .nav-link.active {
-            color: #fff;
-            background-color: rgba(255, 255, 255, .1);
-        }
-
-        .nav-link i {
-            width: 2rem;
-            font-size: 0.85rem;
-        }
-
-        .sidebar-heading {
-            color: rgba(255, 255, 255, .5);
-            padding: 0 1rem;
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            margin-top: 0.5rem;
-        }
-
-        #content-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .topbar {
-            height: 4.375rem;
-            background-color: #fff;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-        }
-
-        .card {
-            border: none;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-            margin-bottom: 1.5rem;
-        }
-
         .invoice-header {
-            background: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
+            background: var(--primary-color);
             color: white;
             padding: 2rem;
-            border-radius: 0.35rem 0.35rem 0 0;
+            border-radius: 8px 8px 0 0;
         }
 
         .total-box {
-            background-color: #f8f9fc;
+            background-color: #f1f5f9;
             padding: 1.5rem;
-            border-radius: 0.35rem;
+            border-radius: 8px;
             text-align: right;
         }
 
         .total-amount {
             font-size: 2rem;
-            font-weight: bold;
-            color: var(--success);
+            font-weight: 600;
+            color: var(--success-color);
         }
 
         @media print {
-
             #sidebar-wrapper,
             .topbar,
             .no-print {
@@ -164,82 +83,10 @@ $detalles = $stmt_det->get_result();
 
 <body>
     <div id="wrapper">
-        <!-- Sidebar -->
-        <ul class="navbar-nav" id="sidebar-wrapper">
-            <a class="sidebar-brand" href="index.php">
-                <div class="sidebar-brand-icon"><i class="fas fa-shopping-cart"></i></div>
-                <div class="sidebar-brand-text mx-3">VENTAS</div>
-            </a>
-            <hr class="sidebar-divider my-0" style="border-color: rgba(255,255,255,.2)">
-            <li class="nav-item">
-                <a class="nav-link" href="index.php">
-                    <i class="fas fa-fw fa-tachometer-alt"></i><span>Dashboard</span>
-                </a>
-            </li>
-            <hr class="sidebar-divider" style="border-color: rgba(255,255,255,.2)">
-            <div class="sidebar-heading">Gestión</div>
-            <li class="nav-item">
-                <a class="nav-link" href="productos.php">
-                    <i class="fas fa-fw fa-box"></i><span>Productos</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="clientes.php">
-                    <i class="fas fa-fw fa-users"></i><span>Clientes</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="proveedores.php">
-                    <i class="fas fa-fw fa-truck"></i><span>Proveedores</span>
-                </a>
-            </li>
-            <hr class="sidebar-divider" style="border-color: rgba(255,255,255,.2)">
-            <div class="sidebar-heading">Operaciones</div>
-            <li class="nav-item">
-                <a class="nav-link active" href="ventas.php">
-                    <i class="fas fa-fw fa-cash-register"></i><span>Ventas</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="facturas.php">
-                    <i class="fas fa-fw fa-file-invoice"></i><span>Facturas</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="caja.php">
-                    <i class="fas fa-fw fa-money-bill-wave"></i><span>Caja</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="cuentas_corrientes.php">
-                    <i class="fas fa-fw fa-file-invoice-dollar"></i><span>Cuentas Corrientes</span>
-                </a>
-            </li>
-            <hr class="sidebar-divider" style="border-color: rgba(255,255,255,.2)">
-            <li class="nav-item">
-                <a class="nav-link" href="reportes.php">
-                    <i class="fas fa-fw fa-chart-area"></i><span>Reportes</span>
-                </a>
-            </li>
-            <hr class="sidebar-divider" style="border-color: rgba(255,255,255,.2)">
-            <li class="nav-item">
-                <a class="nav-link" href="cerrar_sesion.php">
-                    <i class="fas fa-fw fa-sign-out-alt"></i><span>Cerrar Sesión</span>
-                </a>
-            </li>
-        </ul>
+        <?php include 'sidebar.php'; ?>
 
-        <!-- Content -->
         <div id="content-wrapper">
-            <nav class="navbar navbar-expand topbar mb-4 static-top">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-user-circle fa-2x" style="color: #858796;"></i>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+            <?php include 'topbar.php'; ?>
 
             <div class="container-fluid">
                 <div class="d-sm-flex align-items-center justify-content-between mb-4 no-print">
