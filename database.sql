@@ -112,10 +112,7 @@ CREATE TABLE `clientes` (
 
 INSERT INTO `clientes` (`id`, `nombre`, `apellido`, `email`, `telefono`, `direccion`, `dni`, `estado`, `fecha_creacion`) VALUES
 (1, 'Juan', 'Pérez', 'juan@email.com', '3875551234', 'Av. Belgrano 123', '12345678', 1, '2025-10-22 18:36:14'),
-(2, 'María', 'González', 'maria@email.com', '3875555678', 'Calle Alvarado 456', '23456789', 1, '2025-10-22 18:36:14'),
-(3, 'Carlos', 'López', 'carlos@email.com', '3875559012', 'Av. Sarmiento 789', '34567890', 1, '2025-10-22 18:36:14'),
-(4, 'Ana', 'Martínez', 'ana@email.com', '3875553456', 'Calle Mitre 321', '45678901', 1, '2025-10-22 18:36:14'),
-(5, 'Jose', 'Saravia', 'josesaravia303@gmail.com', '3871235353', 'Coronel Moldes', '46787907', 0, '2025-10-22 18:38:17');
+(2, 'María', 'González', 'maria@email.com', '3875555678', 'Calle Alvarado 456', '23456789', 1, '2025-10-22 18:36:14');
 
 -- --------------------------------------------------------
 
@@ -225,9 +222,15 @@ CREATE TABLE `detalle_ventas` (
 -- Volcado de datos para la tabla `detalle_ventas`
 --
 
-INSERT INTO `detalle_ventas` (`id`, `venta_id`, `producto_id`, `cantidad`, `precio_unitario`, `subtotal`) VALUES
-(1, 1, 1, 1, 45000.00, 45000.00),
-(2, 1, 2, 1, 1500.00, 1500.00),
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `facturas`
+--
+
+CREATE TABLE `facturas` (
+  `id` int(11) NOT NULL,
+  `numero_factura` varchar(50) NOT NULL,
 (3, 1, 3, 1, 3500.00, 3500.00),
 (4, 2, 4, 2, 2500.00, 5000.00),
 (5, 2, 6, 1, 500.00, 500.00),
@@ -556,7 +559,7 @@ CREATE TABLE `ventas` (
 -- Volcado de datos para la tabla `ventas`
 --
 
-INSERT INTO `ventas` (`id`, `cliente_id`, `usuario_id`, `total`, `metodo_pago`, `estado`, `fecha_venta`) VALUES
+-- --------------------------------------------------------
 (1, 1, 1, 48500.00, 'tarjeta', 'completada', '2025-10-22 18:36:14'),
 (2, 2, 1, 5500.00, 'efectivo', 'completada', '2025-10-22 18:36:14'),
 (3, 3, 1, 15800.00, 'transferencia', 'completada', '2025-10-22 18:36:14'),
@@ -973,3 +976,5 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
