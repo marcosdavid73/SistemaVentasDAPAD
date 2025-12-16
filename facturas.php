@@ -1,10 +1,8 @@
 <?php
 require_once 'config.php';
 
-// Verificar permisos (admin y vendedor pueden acceder)
 requiere_permiso('facturas');
 
-// Procesar nueva factura
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
     if ($_POST['accion'] === 'crear_factura') {
         $numero_factura = limpiar_entrada($_POST['numero_factura']);
@@ -14,7 +12,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
         $fecha_emision = limpiar_entrada($_POST['fecha_emision']);
         $fecha_vencimiento = limpiar_entrada($_POST['fecha_vencimiento']);
 
-        // VALIDACIÓN: Verificar que productos no esté vacío
         $productos_json = $_POST['productos'];
         if (empty($productos_json)) {
             $mensaje = "Error: No hay productos en la factura";
@@ -22,7 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
         } else {
             $productos = json_decode($productos_json, true);
 
-            // VALIDACIÓN: Verificar que se decodificó correctamente
             if ($productos === null || !is_array($productos) || count($productos) === 0) {
                 $mensaje = "Error: No se pudieron procesar los productos de la factura";
                 $tipo_mensaje = "danger";
@@ -35,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
                 $conn->begin_transaction();
 
                 try {
-                    // Insertar factura
                     $sql_factura = "INSERT INTO facturas (numero_factura, tipo, tipo_comprobante, cliente_id, fecha_emision, fecha_vencimiento, subtotal, iva, total, observaciones, usuario_id) 
                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)";
                     $stmt_factura = $conn->prepare($sql_factura);
@@ -43,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
                     $stmt_factura->execute();
                     $factura_id = $conn->insert_id;
 
-                    // Insertar detalles
                     foreach ($productos as $prod) {
                         $producto_id = isset($prod['id']) ? intval($prod['id']) : null;
                         $descripcion = limpiar_entrada($prod['descripcion']);
@@ -58,9 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
                         $stmt_detalle->execute();
                     }
 
-                    // Registrar en cuenta corriente si es factura
                     if ($tipo_comprobante === 'factura') {
-                        // Obtener saldo actual del cliente
                         $sql_saldo_actual = "SELECT COALESCE(SUM(CASE WHEN tipo_movimiento = 'debe' THEN importe ELSE -importe END), 0) as saldo
                                          FROM cuentas_corrientes WHERE cliente_id = ?";
                         $stmt_saldo = $conn->prepare($sql_saldo_actual);
@@ -89,22 +81,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
         }
     }
 }
-// Obtener facturas
 $sql_facturas = "SELECT f.*, c.nombre as cliente_nombre, c.apellido as cliente_apellido 
                  FROM facturas f 
                  INNER JOIN clientes c ON f.cliente_id = c.id 
                  ORDER BY f.id DESC";
 $result_facturas = $conn->query($sql_facturas);
 
-// Obtener clientes activos
 $sql_clientes = "SELECT * FROM clientes WHERE estado=1 ORDER BY nombre";
 $result_clientes = $conn->query($sql_clientes);
 
-// Obtener productos activos
 $sql_productos = "SELECT * FROM productos WHERE estado=1 ORDER BY nombre";
 $result_productos = $conn->query($sql_productos);
 
-// Generar siguiente número de factura
 $sql_ultimo = "SELECT numero_factura FROM facturas ORDER BY id DESC LIMIT 1";
 $result_ultimo = $conn->query($sql_ultimo);
 $siguiente_numero = "0001-00000001";
@@ -528,12 +516,10 @@ if ($result_ultimo->num_rows > 0) {
     <script>
         let items = [];
 
-        // Función para formatear precio
         function formatearPrecio(precio) {
             return '$' + parseFloat(precio).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
         }
 
-        // Event listener para seleccionar producto
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Inicializando facturas...');
 
@@ -559,7 +545,6 @@ if ($result_ultimo->num_rows > 0) {
                 }
             });
 
-            // Resetear modal al cerrar
             const modalFactura = document.getElementById('modalFactura');
             if (modalFactura) {
                 modalFactura.addEventListener('hidden.bs.modal', function() {
@@ -570,7 +555,6 @@ if ($result_ultimo->num_rows > 0) {
                 });
             }
 
-            // Validar formulario antes de enviar
             const formFactura = document.getElementById('formFactura');
             if (formFactura) {
                 formFactura.addEventListener('submit', function(e) {
@@ -591,7 +575,6 @@ if ($result_ultimo->num_rows > 0) {
                         return false;
                     }
 
-                    // Verificar que productos_json tenga contenido
                     const productosJson = document.getElementById('productos_json').value;
                     if (!productosJson || productosJson === '' || productosJson === '[]') {
                         e.preventDefault();
@@ -602,7 +585,6 @@ if ($result_ultimo->num_rows > 0) {
 
                     console.log('Enviando factura correctamente');
 
-                    // Mostrar loading
                     const btn = document.getElementById('btnGuardarFactura');
                     btn.disabled = true;
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
@@ -612,7 +594,6 @@ if ($result_ultimo->num_rows > 0) {
             }
         });
 
-        // Función para agregar item (GLOBAL)
         function agregarItem(producto) {
             console.log('Agregando item:', producto);
 
@@ -635,7 +616,6 @@ if ($result_ultimo->num_rows > 0) {
             actualizarItems();
         }
 
-        // Función para actualizar items (GLOBAL)
         function actualizarItems() {
             console.log('=== ACTUALIZANDO ITEMS ===');
             console.log('Cantidad de items:', items.length);
@@ -707,7 +687,6 @@ if ($result_ultimo->num_rows > 0) {
             console.log('=== FIN ACTUALIZACIÓN ===');
         }
 
-        // Cambiar cantidad (GLOBAL)
         function cambiarCantidad(index, cambio) {
             const item = items[index];
             const nuevaCantidad = item.cantidad + cambio;
@@ -721,7 +700,6 @@ if ($result_ultimo->num_rows > 0) {
             actualizarItems();
         }
 
-        // Eliminar item (GLOBAL)
         function eliminarItem(index) {
             if (confirm('¿Eliminar este item?')) {
                 items.splice(index, 1);
@@ -729,12 +707,10 @@ if ($result_ultimo->num_rows > 0) {
             }
         }
 
-        // Ver factura (GLOBAL)
         function verFactura(id) {
             window.location.href = 'detalle_factura.php?id=' + id;
         }
 
-        // Descargar PDF (GLOBAL)
         function descargarPDF(id) {
             window.open('generar_pdf_factura.php?id=' + id, '_blank');
         }

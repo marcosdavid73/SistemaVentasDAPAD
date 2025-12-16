@@ -1,13 +1,11 @@
 <?php
 session_start();
 
-// Si ya está logueado, redirigir al dashboard
 if (isset($_SESSION['usuario_id'])) {
     header("Location: dashboard.php");
     exit();
 }
 
-// Configuración de base de datos
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
@@ -22,12 +20,10 @@ if ($conn->connect_error) {
 $error = '';
 $debug_info = ''; // Para mostrar información de depuración
 
-// Procesar login
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
     $password = $_POST['password'];
 
-    // Verificar que los campos no estén vacíos
     if (empty($email) || empty($password)) {
         $error = 'Por favor complete todos los campos';
     } else {
@@ -40,22 +36,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result->num_rows === 1) {
             $usuario = $result->fetch_assoc();
 
-            // Debug: Mostrar info (QUITAR EN PRODUCCIÓN)
-            // $debug_info = "Usuario encontrado. Hash en BD: " . substr($usuario['password'], 0, 20) . "...";
 
-            // Verificar contraseña
             if (password_verify($password, $usuario['password'])) {
-                // Verificar si el usuario está activo
                 if ($usuario['estado'] == 0) {
                     $error = 'Tu cuenta ha sido desactivada. Contacta al administrador.';
                 } else {
-                    // Login exitoso
                     $_SESSION['usuario_id'] = $usuario['id'];
                     $_SESSION['usuario_nombre'] = $usuario['nombre'];
                     $_SESSION['usuario_email'] = $usuario['email'];
                     $_SESSION['rol'] = $usuario['rol'];
 
-                    // Actualizar último acceso
                     $update_sql = "UPDATE usuarios SET ultimo_acceso = NOW() WHERE id = ?";
                     $update_stmt = $conn->prepare($update_sql);
                     $update_stmt->bind_param("i", $usuario['id']);

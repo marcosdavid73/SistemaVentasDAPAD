@@ -2,7 +2,6 @@
 require_once 'config.php';
 requiere_permiso('productos'); // Solo admin y repositor
 
-// Procesar acciones
 $mensaje = '';
 $tipo_mensaje = '';
 
@@ -20,7 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($stmt->execute()) {
                     $cat_id = $stmt->insert_id;
                     
-                    // Guardar ícono
                     $conn->query("INSERT INTO categorias_iconos (categoria_id, icono) VALUES ($cat_id, '$icono')");
                     
                     $mensaje = 'Categoría creada exitosamente';
@@ -42,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->bind_param("ssi", $nombre, $descripcion, $id);
                 
                 if ($stmt->execute()) {
-                    // Actualizar ícono
                     $conn->query("INSERT INTO categorias_iconos (categoria_id, icono) VALUES ($id, '$icono')
                                  ON DUPLICATE KEY UPDATE icono='$icono'");
                     
@@ -58,7 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             case 'eliminar':
                 $id = intval($_POST['id']);
                 
-                // Verificar si tiene productos
                 $check = $conn->query("SELECT COUNT(*) as total FROM productos WHERE categoria_id=$id");
                 $count = $check->fetch_assoc()['total'];
                 
@@ -90,7 +86,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Obtener todas las categorías con conteo de productos
 $sql = "SELECT c.*, ci.icono, COUNT(p.id) as total_productos
         FROM categorias c
         LEFT JOIN categorias_iconos ci ON c.id = ci.categoria_id
@@ -99,7 +94,6 @@ $sql = "SELECT c.*, ci.icono, COUNT(p.id) as total_productos
         ORDER BY c.nombre";
 $result = $conn->query($sql);
 
-// Iconos disponibles para seleccionar
 $iconos_disponibles = [
     'fa-broom' => 'Escoba',
     'fa-sink' => 'Lavabo/Vajilla',
@@ -334,7 +328,6 @@ $iconos_disponibles = [
             new bootstrap.Modal(document.getElementById('modalCategoria')).show();
         }
 
-        // Resetear formulario al cerrar modal
         document.getElementById('modalCategoria').addEventListener('hidden.bs.modal', function () {
             document.getElementById('modalTitle').textContent = 'Nueva Categoría';
             document.getElementById('accion').value = 'crear';
@@ -344,7 +337,6 @@ $iconos_disponibles = [
             seleccionarIcono('fa-cube');
         });
 
-        // Seleccionar ícono por defecto al cargar
         seleccionarIcono('fa-cube');
     </script>
 </body>

@@ -3,13 +3,11 @@ require_once 'config.php';
 
 date_default_timezone_set('America/Argentina/Buenos_Aires');
 
-// Configurar headers para descarga de Excel
 header('Content-Type: application/vnd.ms-excel; charset=UTF-8');
 header('Content-Disposition: attachment; filename="reporte_ventas_' . date('Y-m-d') . '.xls"');
 header('Pragma: no-cache');
 header('Expires: 0');
 
-// Obtener tipo de reporte
 $tipo_reporte = isset($_GET['tipo']) ? $_GET['tipo'] : 'general';
 
 ?>
@@ -167,7 +165,6 @@ $tipo_reporte = isset($_GET['tipo']) ? $_GET['tipo'] : 'general';
                             ORDER BY total DESC";
                 $result_cat = $conn->query($sql_cat);
 
-                // Calcular total
                 $total_cat = 0;
                 $categorias = [];
                 while ($row = $result_cat->fetch_assoc()) {
@@ -175,7 +172,6 @@ $tipo_reporte = isset($_GET['tipo']) ? $_GET['tipo'] : 'general';
                     $total_cat += $row['total'];
                 }
 
-                // Mostrar con porcentajes
                 foreach ($categorias as $cat):
                     $porcentaje = ($total_cat > 0) ? ($cat['total'] / $total_cat * 100) : 0;
                 ?>

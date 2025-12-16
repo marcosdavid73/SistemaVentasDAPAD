@@ -1,10 +1,8 @@
 <?php
 require_once 'config.php';
 
-// Verificar permisos (admin y repositor pueden acceder)
 requiere_permiso('productos');
 
-// Procesar acciones (Crear, Editar, Eliminar)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['accion'])) {
         $accion = $_POST['accion'];
@@ -16,7 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stock = intval($_POST['stock']);
             $categoria_id = intval($_POST['categoria_id']);
             
-            // Procesar imagen
             $imagen = null;
             if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === 0) {
                 $allowed = ['jpg', 'jpeg', 'png', 'gif'];
@@ -58,7 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stock = intval($_POST['stock']);
             $categoria_id = intval($_POST['categoria_id']);
             
-            // Procesar nueva imagen si se subió
             $imagen_sql = "";
             $imagen_param = null;
             if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === 0) {
@@ -117,21 +113,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Obtener productos con stock bajo
 $sql_stock_bajo = "SELECT COUNT(*) as total_critico FROM productos WHERE stock <= 5 AND estado=1";
 $stock_critico = $conn->query($sql_stock_bajo)->fetch_assoc()['total_critico'];
 
 $sql_stock_bajo2 = "SELECT COUNT(*) as total_bajo FROM productos WHERE stock > 5 AND stock <= 10 AND estado=1";
 $stock_bajo = $conn->query($sql_stock_bajo2)->fetch_assoc()['total_bajo'];
 
-// Obtener productos
 $sql_productos = "SELECT p.*, c.nombre as categoria_nombre FROM productos p 
                   LEFT JOIN categorias c ON p.categoria_id = c.id 
                   WHERE p.estado=1
                   ORDER BY p.stock ASC, p.id DESC";
 $result_productos = $conn->query($sql_productos);
 
-// Obtener categorías para el select (con iconos)
 $sql_categorias = "SELECT c.*, ci.icono 
                    FROM categorias c 
                    LEFT JOIN categorias_iconos ci ON c.id = ci.categoria_id 
@@ -237,7 +230,6 @@ $result_categorias = $conn->query($sql_categorias);
             padding: 0.5em 0.75em;
         }
 
-        /* Estilos para alertas de stock */
         .alert-stock {
             border-left: 4px solid #f6c23e;
             background: linear-gradient(90deg, #fff3cd 0%, #ffffff 100%);
@@ -636,7 +628,6 @@ $result_categorias = $conn->query($sql_categorias);
         }
 
         function verDetalleProducto(id) {
-            // Redirigir a página de detalle
             window.location.href = 'detalle_producto.php?id=' + id;
         }
 

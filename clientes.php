@@ -1,10 +1,8 @@
 <?php
 require_once 'config.php';
 
-// Verificar permisos (admin y vendedor pueden acceder)
 requiere_permiso('clientes');
 
-// Procesar acciones
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['accion'])) {
         $accion = $_POST['accion'];
@@ -69,7 +67,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Obtener clientes
 $sql_clientes = "SELECT * FROM clientes WHERE estado=1 ORDER BY id DESC";
 $result_clientes = $conn->query($sql_clientes);
 ?>

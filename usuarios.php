@@ -1,7 +1,6 @@
 <?php
 require_once 'config.php';
 
-// Verificar que esté logueado y sea admin
 if (!esta_logueado()) {
     redirigir('login.php');
 }
@@ -11,7 +10,6 @@ if (!es_admin()) {
     die('Acceso denegado. Solo administradores pueden gestionar usuarios.');
 }
 
-// Procesar acciones
 $mensaje = '';
 $tipo_mensaje = '';
 
@@ -24,7 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $password = $_POST['password'];
         $rol = limpiar_entrada($_POST['rol']);
 
-        // Validar email único
         $check = $conn->query("SELECT id FROM usuarios WHERE email = '$email'");
         if ($check->num_rows > 0) {
             $mensaje = 'El email ya está registrado';
@@ -50,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $rol = limpiar_entrada($_POST['rol']);
         $password = $_POST['password'] ?? '';
 
-        // Validar email único (excepto el mismo usuario)
         $check = $conn->query("SELECT id FROM usuarios WHERE email = '$email' AND id != $id");
         if ($check->num_rows > 0) {
             $mensaje = 'El email ya está registrado por otro usuario';
@@ -93,7 +89,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($accion === 'eliminar') {
         $id = intval($_POST['id']);
 
-        // No permitir eliminar al admin principal
         if ($id == 1) {
             $mensaje = 'No se puede eliminar el usuario administrador principal';
             $tipo_mensaje = 'danger';
@@ -113,7 +108,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Obtener lista de usuarios
 $usuarios = $conn->query("SELECT * FROM usuarios ORDER BY id DESC");
 ?>
 

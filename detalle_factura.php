@@ -3,7 +3,6 @@ require_once 'config.php';
 
 $factura_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-// Obtener datos de la factura
 $sql_factura = "SELECT f.*, c.nombre as cliente_nombre, c.apellido as cliente_apellido,
                 c.dni, c.email, c.telefono, c.direccion,
                 u.nombre as usuario_nombre
@@ -21,7 +20,6 @@ if (!$factura) {
     exit();
 }
 
-// Obtener detalles de productos
 $sql_detalles = "SELECT df.*, p.nombre as producto_nombre
                  FROM detalle_facturas df
                  LEFT JOIN productos p ON df.producto_id = p.id

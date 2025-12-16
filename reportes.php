@@ -1,12 +1,10 @@
 <?php
 require_once 'config.php';
 
-// Verificar sesión
 if (!esta_logueado()) {
     redirigir('login.php');
 }
 
-// Obtener estadísticas generales
 $sql_total_ventas = "SELECT COUNT(*) as total FROM ventas WHERE estado='completada'";
 $total_ventas = $conn->query($sql_total_ventas)->fetch_assoc()['total'];
 
@@ -19,7 +17,6 @@ $total_productos = $conn->query($sql_total_productos)->fetch_assoc()['total'];
 $sql_total_clientes = "SELECT COUNT(*) as total FROM clientes WHERE estado=1";
 $total_clientes = $conn->query($sql_total_clientes)->fetch_assoc()['total'];
 
-// Ventas por mes (últimos 12 meses)
 $sql_ventas_mes = "SELECT DATE_FORMAT(fecha_venta, '%Y-%m') as mes, 
                    DATE_FORMAT(fecha_venta, '%b %Y') as mes_nombre,
                    SUM(total) as total 
@@ -33,7 +30,6 @@ while ($row = $result_ventas_mes->fetch_assoc()) {
 }
 $ventas_mes = array_reverse($ventas_mes);
 
-// Productos más vendidos
 $sql_productos_top = "SELECT p.nombre, SUM(dv.cantidad) as vendido, SUM(dv.subtotal) as ingresos
                       FROM detalle_ventas dv
                       INNER JOIN productos p ON dv.producto_id = p.id
@@ -44,7 +40,6 @@ $sql_productos_top = "SELECT p.nombre, SUM(dv.cantidad) as vendido, SUM(dv.subto
                       LIMIT 10";
 $result_productos_top = $conn->query($sql_productos_top);
 
-// Ventas por categoría
 $sql_ventas_categoria = "SELECT c.nombre, SUM(dv.subtotal) as total
                          FROM detalle_ventas dv
                          INNER JOIN productos p ON dv.producto_id = p.id
@@ -59,7 +54,6 @@ while ($row = $result_ventas_categoria->fetch_assoc()) {
     $ventas_categoria[] = $row;
 }
 
-// Métodos de pago
 $sql_metodos_pago = "SELECT metodo_pago, COUNT(*) as cantidad, SUM(total) as monto
                      FROM ventas WHERE estado='completada'
                      GROUP BY metodo_pago";
@@ -529,7 +523,6 @@ while ($row = $result_metodos_pago->fetch_assoc()) {
     <script>
         console.log('Inicializando reportes...');
 
-        // Datos desde PHP
         const datosVentas = <?php echo json_encode($ventas_mes); ?>;
         const datosCategorias = <?php echo json_encode($ventas_categoria); ?>;
         const datosMetodos = <?php echo json_encode($metodos_pago); ?>;
@@ -538,7 +531,6 @@ while ($row = $result_metodos_pago->fetch_assoc()) {
         console.log('Datos categorías:', datosCategorias);
         console.log('Datos métodos:', datosMetodos);
 
-        // Gráfico de Ventas por Mes
         if (datosVentas && datosVentas.length > 0) {
             const ctxVentasMes = document.getElementById('ventasMesChart');
             if (ctxVentasMes) {
@@ -589,7 +581,6 @@ while ($row = $result_metodos_pago->fetch_assoc()) {
             }
         }
 
-        // Gráfico de Categorías
         if (datosCategorias && datosCategorias.length > 0) {
             const ctxCategorias = document.getElementById('categoriasChart');
             if (ctxCategorias) {
@@ -632,7 +623,6 @@ while ($row = $result_metodos_pago->fetch_assoc()) {
             }
         }
 
-        // Gráfico de Métodos de Pago
         if (datosMetodos && datosMetodos.length > 0) {
             const ctxMetodos = document.getElementById('metodosPagoChart');
             if (ctxMetodos) {

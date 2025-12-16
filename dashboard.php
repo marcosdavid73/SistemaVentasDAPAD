@@ -1,25 +1,20 @@
 <?php
 require_once 'config.php';
 
-// Verificar sesión
 if (!esta_logueado()) {
     redirigir('login.php');
 }
 
-// Redirigir al catálogo si es usuario tipo cliente
 if (obtener_rol() === 'cliente') {
     redirigir('index.php');
 }
 
-// 🔍 NUEVA FUNCIONALIDAD DE BÚSQUEDA
 $busqueda = isset($_GET['buscar']) ? limpiar_entrada($_GET['buscar']) : '';
 $resultados_busqueda = [];
 $hay_busqueda = !empty($busqueda);
 
 if ($hay_busqueda) {
-    // Buscar en múltiples tablas
 
-    // 1. Buscar productos
     $sql_productos_busqueda = "SELECT 'producto' as tipo, id, nombre as titulo, precio, stock, 
                                 CONCAT('Stock: ', stock, ' | Precio: ', precio) as detalle
                                 FROM productos 
@@ -34,7 +29,6 @@ if ($hay_busqueda) {
         $resultados_busqueda[] = $row;
     }
 
-    // 2. Buscar clientes
     $sql_clientes_busqueda = "SELECT 'cliente' as tipo, id, CONCAT(nombre, ' ', apellido) as titulo, 
                                CONCAT('DNI: ', dni, ' | Tel: ', telefono) as detalle, 0 as precio, 0 as stock
                                FROM clientes 
@@ -48,7 +42,6 @@ if ($hay_busqueda) {
         $resultados_busqueda[] = $row;
     }
 
-    // 3. Buscar ventas
     $sql_ventas_busqueda = "SELECT 'venta' as tipo, v.id, 
                             CONCAT('Venta #', LPAD(v.id, 6, '0')) as titulo,
                             CONCAT('Cliente: ', c.nombre, ' ', c.apellido, ' | Total: $', v.total) as detalle,
@@ -66,7 +59,6 @@ if ($hay_busqueda) {
         $resultados_busqueda[] = $row;
     }
 
-    // 4. Buscar facturas
     $sql_facturas_busqueda = "SELECT 'factura' as tipo, f.id, 
                               CONCAT('Factura ', f.numero_factura) as titulo,
                               CONCAT('Cliente: ', c.nombre, ' ', c.apellido, ' | Total: $', f.total) as detalle,
@@ -85,7 +77,6 @@ if ($hay_busqueda) {
     }
 }
 
-// Obtener métricas del mes actual
 $mes_actual = date('Y-m');
 $sql_ventas_mes = "SELECT SUM(total) as total FROM ventas WHERE DATE_FORMAT(fecha_venta, '%Y-%m') = ? AND estado='completada'";
 $stmt = $conn->prepare($sql_ventas_mes);
@@ -93,7 +84,6 @@ $stmt->bind_param("s", $mes_actual);
 $stmt->execute();
 $ventas_mensuales = $stmt->get_result()->fetch_assoc()['total'] ?? 0;
 
-// Ventas anuales
 $anio_actual = date('Y');
 $sql_ventas_anual = "SELECT SUM(total) as total FROM ventas WHERE YEAR(fecha_venta) = ? AND estado='completada'";
 $stmt = $conn->prepare($sql_ventas_anual);
@@ -101,15 +91,12 @@ $stmt->bind_param("s", $anio_actual);
 $stmt->execute();
 $ventas_anuales = $stmt->get_result()->fetch_assoc()['total'] ?? 0;
 
-// Total productos
 $sql_productos = "SELECT COUNT(*) as total FROM productos WHERE estado=1";
 $total_productos = $conn->query($sql_productos)->fetch_assoc()['total'];
 
-// Total clientes
 $sql_clientes = "SELECT COUNT(*) as total FROM clientes WHERE estado=1";
 $total_clientes = $conn->query($sql_clientes)->fetch_assoc()['total'];
 
-// 🔔 ALERTAS DE STOCK
 $sql_stock_critico = "SELECT COUNT(*) as total FROM productos WHERE stock <= 5 AND estado=1";
 $productos_criticos = $conn->query($sql_stock_critico)->fetch_assoc()['total'];
 
@@ -118,7 +105,6 @@ $productos_bajo = $conn->query($sql_stock_bajo)->fetch_assoc()['total'];
 
 $total_alertas = $productos_criticos + $productos_bajo;
 
-// Productos con stock crítico (detalles)
 $sql_productos_alerta = "SELECT p.id, p.nombre, p.stock, p.precio, c.nombre as categoria
                           FROM productos p
                           LEFT JOIN categorias c ON p.categoria_id = c.id
@@ -131,7 +117,6 @@ while ($row = $result_alertas->fetch_assoc()) {
     $productos_alerta[] = $row;
 }
 
-// Ventas de los últimos 12 meses
 $sql_grafico_ventas = "SELECT DATE_FORMAT(fecha_venta, '%Y-%m') as mes, SUM(total) as total 
                        FROM ventas WHERE estado='completada' 
                        GROUP BY DATE_FORMAT(fecha_venta, '%Y-%m') 
@@ -142,7 +127,6 @@ while ($row = $result_grafico->fetch_assoc()) {
     $datos_grafico[] = $row;
 }
 
-// Ventas por categoría
 $sql_categorias = "SELECT c.nombre, SUM(dv.subtotal) as total
                    FROM detalle_ventas dv
                    INNER JOIN productos p ON dv.producto_id = p.id
@@ -260,7 +244,6 @@ while ($row = $result_categorias->fetch_assoc()) {
             height: 300px;
         }
 
-        /* 🔔 ESTILOS PARA ALERTAS DE STOCK */
         .alert-badge {
             position: absolute;
             top: 5px;
@@ -319,7 +302,6 @@ while ($row = $result_categorias->fetch_assoc()) {
             color: white;
         }
 
-        /* 🔍 ESTILOS PARA LA BÚSQUEDA */
         .search-container {
             position: relative;
             width: 100%;
@@ -824,13 +806,11 @@ while ($row = $result_categorias->fetch_assoc()) {
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
-        // 🔍 FUNCIONALIDAD DE BÚSQUEDA
         const searchInput = document.getElementById('searchInput');
         const searchResults = document.getElementById('searchResults');
         const clearSearch = document.getElementById('clearSearch');
         const searchForm = document.getElementById('searchForm');
 
-        // Mostrar/ocultar botón de limpiar
         searchInput.addEventListener('input', function() {
             if (this.value.length > 0) {
                 clearSearch.classList.add('show');
@@ -840,7 +820,6 @@ while ($row = $result_categorias->fetch_assoc()) {
             }
         });
 
-        // Limpiar búsqueda
         clearSearch.addEventListener('click', function() {
             searchInput.value = '';
             clearSearch.classList.remove('show');
@@ -848,28 +827,24 @@ while ($row = $result_categorias->fetch_assoc()) {
             window.location.href = 'index.php';
         });
 
-        // Buscar al presionar Enter
         searchForm.addEventListener('submit', function(e) {
             if (searchInput.value.trim().length === 0) {
                 e.preventDefault();
             }
         });
 
-        // Cerrar resultados al hacer clic fuera
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.search-container')) {
                 searchResults.classList.remove('show');
             }
         });
 
-        // Mostrar resultados al hacer clic en el input si ya hay búsqueda
         searchInput.addEventListener('focus', function() {
             if (this.value.length > 0 && searchResults.children.length > 0) {
                 searchResults.classList.add('show');
             }
         });
 
-        // GRÁFICOS
         console.log('Inicializando gráficos...');
 
         const datosVentas = <?php echo json_encode($datos_grafico); ?>;
@@ -878,7 +853,6 @@ while ($row = $result_categorias->fetch_assoc()) {
         console.log('Datos de ventas:', datosVentas);
         console.log('Datos de categorías:', datosCategorias);
 
-        // Gráfico de Ventas
         if (datosVentas && datosVentas.length > 0) {
             const ctxVentas = document.getElementById('ventasChart');
             if (ctxVentas) {
@@ -935,7 +909,6 @@ while ($row = $result_categorias->fetch_assoc()) {
             document.getElementById('ventasChart').parentElement.innerHTML = '<p class="text-center text-muted p-5">No hay datos de ventas disponibles</p>';
         }
 
-        // Gráfico de Categorías
         if (datosCategorias && datosCategorias.length > 0) {
             const ctxCategorias = document.getElementById('categoriasChart');
             if (ctxCategorias) {

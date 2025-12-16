@@ -1,10 +1,8 @@
 <?php
 require_once 'config.php';
 
-// Verificar permisos (admin y repositor pueden acceder)
 requiere_permiso('proveedores');
 
-// Procesar acciones
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['accion'])) {
         $accion = $_POST['accion'];
@@ -80,7 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Obtener proveedores
 $sql_proveedores = "SELECT * FROM proveedores WHERE estado=1 ORDER BY id DESC";
 $result_proveedores = $conn->query($sql_proveedores);
 ?>

@@ -1,13 +1,10 @@
 <?php
 require_once 'config.php';
 
-// Catálogo público - NO requiere autenticación
 
-// Obtener filtros
 $busqueda = $_GET['buscar'] ?? '';
 $categoria_id = $_GET['categoria'] ?? '';
 
-// Obtener categorías para el filtro (con iconos)
 $categorias_query = "SELECT c.*, ci.icono 
                      FROM categorias c 
                      LEFT JOIN categorias_iconos ci ON c.id = ci.categoria_id 
@@ -15,13 +12,11 @@ $categorias_query = "SELECT c.*, ci.icono
                      ORDER BY c.nombre";
 $categorias = $conn->query($categorias_query);
 
-// Consulta base
 $sql = "SELECT p.*, c.nombre as categoria_nombre 
         FROM productos p 
         LEFT JOIN categorias c ON p.categoria_id = c.id 
         WHERE p.estado = 1";
 
-// Aplicar filtros
 $params = [];
 $types = '';
 
@@ -42,7 +37,6 @@ if (!empty($categoria_id)) {
 
 $sql .= " ORDER BY p.nombre";
 
-// Preparar y ejecutar consulta
 $stmt = $conn->prepare($sql);
 if (!empty($params)) {
     array_unshift($params, $types);
@@ -142,7 +136,6 @@ $result = $stmt->get_result();
             border: 1px solid var(--border-color);
         }
 
-        /* Estilos para pills de categorías */
         .category-pills {
             display: flex;
             flex-wrap: wrap;

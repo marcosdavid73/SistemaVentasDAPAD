@@ -3,7 +3,6 @@ require_once 'config.php';
 
 $factura_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-// Obtener datos de la factura
 $sql_factura = "SELECT f.*, c.nombre as cliente_nombre, c.apellido as cliente_apellido,
                 c.dni, c.email, c.telefono, c.direccion,
                 u.nombre as usuario_nombre
@@ -20,7 +19,6 @@ if (!$factura) {
     die('Factura no encontrada');
 }
 
-// Obtener detalles
 $sql_detalles = "SELECT df.*, p.nombre as producto_nombre
                  FROM detalle_facturas df
                  LEFT JOIN productos p ON df.producto_id = p.id
@@ -30,7 +28,6 @@ $stmt_det->bind_param("i", $factura_id);
 $stmt_det->execute();
 $detalles = $stmt_det->get_result();
 
-// Configurar headers para PDF (usando HTML como alternativa)
 header('Content-Type: text/html; charset=UTF-8');
 ?>
 <!DOCTYPE html>

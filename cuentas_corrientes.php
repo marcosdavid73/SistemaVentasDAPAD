@@ -1,12 +1,10 @@
 <?php
 require_once 'config.php';
 
-// Verificar sesión
 if (!esta_logueado()) {
     redirigir('login.php');
 }
 
-// Obtener clientes con saldos
 $sql_clientes = "SELECT 
     c.id,
     c.nombre,
@@ -24,7 +22,6 @@ HAVING saldo_actual != 0 OR total_debe > 0 OR total_haber > 0
 ORDER BY saldo_actual DESC";
 $result_clientes = $conn->query($sql_clientes);
 
-// Si se selecciona un cliente específico
 $cliente_seleccionado = null;
 $movimientos_cliente = [];
 $saldo_total = 0;
@@ -32,14 +29,12 @@ $saldo_total = 0;
 if (isset($_GET['cliente_id'])) {
     $cliente_id = intval($_GET['cliente_id']);
 
-    // Obtener datos del cliente
     $sql_cliente = "SELECT * FROM clientes WHERE id = ?";
     $stmt = $conn->prepare($sql_cliente);
     $stmt->bind_param("i", $cliente_id);
     $stmt->execute();
     $cliente_seleccionado = $stmt->get_result()->fetch_assoc();
 
-    // Obtener movimientos del cliente
     $sql_movimientos = "SELECT cc.*, f.numero_factura, f.tipo as factura_tipo
                         FROM cuentas_corrientes cc
                         LEFT JOIN facturas f ON cc.factura_id = f.id
@@ -54,7 +49,6 @@ if (isset($_GET['cliente_id'])) {
         $movimientos_cliente[] = $row;
     }
 
-    // ⭐ OBTENER EL ÚLTIMO SALDO REGISTRADO
     $sql_ultimo_saldo = "SELECT saldo FROM cuentas_corrientes 
                          WHERE cliente_id = ? 
                          ORDER BY fecha_movimiento DESC, id DESC 
@@ -68,7 +62,6 @@ if (isset($_GET['cliente_id'])) {
     }
 }
 
-// Registrar pago
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
     if ($_POST['accion'] === 'registrar_pago') {
         $cliente_id = intval($_POST['cliente_id']);
@@ -77,7 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
         $fecha_movimiento = limpiar_entrada($_POST['fecha_movimiento']);
         $observaciones = limpiar_entrada($_POST['observaciones']);
 
-        // Obtener saldo actual
         $sql_saldo = "SELECT COALESCE(SUM(CASE WHEN tipo_movimiento = 'debe' THEN importe ELSE -importe END), 0) as saldo
                       FROM cuentas_corrientes WHERE cliente_id = ?";
         $stmt_saldo = $conn->prepare($sql_saldo);
@@ -86,7 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
         $saldo_actual = $stmt_saldo->get_result()->fetch_assoc()['saldo'];
         $nuevo_saldo = $saldo_actual - $importe;
 
-        // ⭐ CORRECCIÓN: bind_param con 6 parámetros (isddss)
         $sql_pago = "INSERT INTO cuentas_corrientes (cliente_id, tipo_movimiento, concepto, importe, saldo, fecha_movimiento, observaciones, usuario_id) 
                      VALUES (?, 'haber', ?, ?, ?, ?, ?, 1)";
         $stmt_pago = $conn->prepare($sql_pago);

@@ -1,10 +1,8 @@
 <?php
 require_once 'config.php';
 
-// Verificar permisos (admin y vendedor pueden acceder)
 requiere_permiso('caja');
 
-// Procesar movimiento de caja
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
     if ($_POST['accion'] === 'nuevo_movimiento') {
         $tipo = limpiar_entrada($_POST['tipo']);
@@ -31,17 +29,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
     }
 }
 
-// Obtener fecha seleccionada
 $fecha_filtro = isset($_GET['fecha']) ? $_GET['fecha'] : date('Y-m-d');
 
-// Obtener movimientos del día
 $sql_movimientos = "SELECT * FROM movimientos_caja WHERE fecha_movimiento = ? ORDER BY id DESC";
 $stmt = $conn->prepare($sql_movimientos);
 $stmt->bind_param("s", $fecha_filtro);
 $stmt->execute();
 $result_movimientos = $stmt->get_result();
 
-// Calcular totales del día
 $sql_totales = "SELECT 
                 SUM(CASE WHEN tipo = 'ingreso' THEN importe ELSE 0 END) as total_ingresos,
                 SUM(CASE WHEN tipo = 'egreso' THEN importe ELSE 0 END) as total_egresos,
@@ -52,7 +47,6 @@ $stmt_totales->bind_param("s", $fecha_filtro);
 $stmt_totales->execute();
 $totales = $stmt_totales->get_result()->fetch_assoc();
 
-// Obtener saldo acumulado hasta la fecha
 $sql_acumulado = "SELECT SUM(CASE WHEN tipo = 'ingreso' THEN importe ELSE -importe END) as saldo_acumulado
                   FROM movimientos_caja WHERE fecha_movimiento <= ?";
 $stmt_acum = $conn->prepare($sql_acumulado);

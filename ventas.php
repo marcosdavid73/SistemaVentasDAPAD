@@ -1,10 +1,8 @@
 <?php
 require_once 'config.php';
 
-// Verificar permisos (admin y vendedor pueden acceder)
 requiere_permiso('ventas');
 
-// Procesar nueva venta
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
     if ($_POST['accion'] === 'crear_venta') {
         $cliente_id = intval($_POST['cliente_id']);
@@ -12,43 +10,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
         $productos_json = $_POST['productos'];
         $total = floatval($_POST['total']);
 
-        // VALIDACIÓN: Verificar que productos_json no esté vacío
         if (empty($productos_json)) {
             $mensaje = "Error: No hay productos en el carrito";
             $tipo_mensaje = "danger";
         } else {
             $productos = json_decode($productos_json, true);
 
-            // VALIDACIÓN: Verificar que se decodificó correctamente
             if ($productos === null || !is_array($productos) || count($productos) === 0) {
                 $mensaje = "Error: No se pudieron procesar los productos del carrito";
                 $tipo_mensaje = "danger";
             } else {
-                // Iniciar transacción
                 $conn->begin_transaction();
 
                 try {
-                    // Insertar venta
                     $sql_venta = "INSERT INTO ventas (cliente_id, usuario_id, total, metodo_pago) VALUES (?, 1, ?, ?)";
                     $stmt_venta = $conn->prepare($sql_venta);
                     $stmt_venta->bind_param("ids", $cliente_id, $total, $metodo_pago);
                     $stmt_venta->execute();
                     $venta_id = $conn->insert_id;
 
-                    // Insertar detalles y actualizar stock
                     foreach ($productos as $prod) {
                         $producto_id = intval($prod['id']);
                         $cantidad = intval($prod['cantidad']);
                         $precio = floatval($prod['precio']);
                         $subtotal = $cantidad * $precio;
 
-                        // Insertar detalle
                         $sql_detalle = "INSERT INTO detalle_ventas (venta_id, producto_id, cantidad, precio_unitario, subtotal) VALUES (?, ?, ?, ?, ?)";
                         $stmt_detalle = $conn->prepare($sql_detalle);
                         $stmt_detalle->bind_param("iiidd", $venta_id, $producto_id, $cantidad, $precio, $subtotal);
                         $stmt_detalle->execute();
 
-                        // Actualizar stock
                         $sql_stock = "UPDATE productos SET stock = stock - ? WHERE id = ?";
                         $stmt_stock = $conn->prepare($sql_stock);
                         $stmt_stock->bind_param("ii", $cantidad, $producto_id);
@@ -68,14 +59,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
     }
 }
 
-// Filtros
 $filtro_cliente = isset($_GET['cliente']) ? intval($_GET['cliente']) : 0;
 $filtro_metodo = isset($_GET['metodo']) ? limpiar_entrada($_GET['metodo']) : '';
 $filtro_fecha_desde = isset($_GET['fecha_desde']) ? $_GET['fecha_desde'] : '';
 $filtro_fecha_hasta = isset($_GET['fecha_hasta']) ? $_GET['fecha_hasta'] : '';
 $busqueda = isset($_GET['buscar']) ? limpiar_entrada($_GET['buscar']) : '';
 
-// Construir query con filtros
 $sql_ventas = "SELECT v.*, c.nombre as cliente_nombre, c.apellido as cliente_apellido 
                FROM ventas v 
                INNER JOIN clientes c ON v.cliente_id = c.id 
@@ -104,7 +93,6 @@ if ($busqueda) {
 $sql_ventas .= " ORDER BY v.id DESC LIMIT 100";
 $result_ventas = $conn->query($sql_ventas);
 
-// Calcular totales con filtros
 $sql_totales = "SELECT COUNT(*) as cantidad, SUM(v.total) as total_ingresos
                 FROM ventas v 
                 INNER JOIN clientes c ON v.cliente_id = c.id 
@@ -118,15 +106,12 @@ if ($busqueda) $sql_totales .= " AND (c.nombre LIKE '%" . $busqueda . "%' OR c.a
 
 $totales = $conn->query($sql_totales)->fetch_assoc();
 
-// Obtener clientes activos
 $sql_clientes = "SELECT * FROM clientes WHERE estado=1 ORDER BY nombre";
 $result_clientes = $conn->query($sql_clientes);
 
-// Obtener productos activos
 $sql_productos = "SELECT * FROM productos WHERE estado=1 AND stock > 0 ORDER BY nombre";
 $result_productos = $conn->query($sql_productos);
 
-// Obtener clientes para filtro
 $sql_clientes_filtro = "SELECT * FROM clientes WHERE estado=1 ORDER BY nombre";
 $result_clientes_filtro = $conn->query($sql_clientes_filtro);
 ?>
@@ -567,7 +552,6 @@ $result_clientes_filtro = $conn->query($sql_clientes_filtro);
                                         <option value="">Seleccionar producto...</option>
                                         <?php
                                         while ($prod = $result_productos->fetch_assoc()):
-                                            // Crear array limpio solo con datos necesarios
                                             $producto_datos = [
                                                 'id' => $prod['id'],
                                                 'nombre' => $prod['nombre'],
@@ -648,19 +632,15 @@ $result_clientes_filtro = $conn->query($sql_clientes_filtro);
     <script>
 
 
-        // Variables GLOBALES
         var carrito = [];
 
-        // Función para formatear precio (CORREGIDA)
         function formatearPrecio(precio) {
             return '$' + parseFloat(precio).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
         }
 
-        // Función para agregar al carrito (GLOBAL)
         function agregarAlCarrito(producto) {
             console.log('Agregando al carrito:', producto);
 
-            // Convertir id a número
             const productoId = parseInt(producto.id);
             const existe = carrito.find(p => p.id === productoId);
 
@@ -689,7 +669,6 @@ $result_clientes_filtro = $conn->query($sql_clientes_filtro);
             actualizarCarrito();
         }
 
-        // Función para actualizar el carrito (GLOBAL)
         function actualizarCarrito() {
             console.log('=== ACTUALIZANDO CARRITO ===');
             console.log('Cantidad de productos en carrito:', carrito.length);
@@ -762,7 +741,6 @@ $result_clientes_filtro = $conn->query($sql_clientes_filtro);
 
             console.log('Total calculado:', total);
 
-            // Actualizar total con animación
             const totalDisplay = document.getElementById('total_display');
             const itemsCount = document.getElementById('items_count');
             const totalVenta = document.getElementById('total_venta');
@@ -783,7 +761,6 @@ $result_clientes_filtro = $conn->query($sql_clientes_filtro);
             console.log('=== FIN ACTUALIZACIÓN ===');
         }
 
-        // Cambiar cantidad (GLOBAL)
         function cambiarCantidad(index, cambio) {
             const producto = carrito[index];
             const nuevaCantidad = producto.cantidad + cambio;
@@ -802,7 +779,6 @@ $result_clientes_filtro = $conn->query($sql_clientes_filtro);
             actualizarCarrito();
         }
 
-        // Eliminar del carrito (GLOBAL)
         function eliminarDelCarrito(index) {
             if (confirm('¿Eliminar este producto del carrito?')) {
                 carrito.splice(index, 1);
@@ -812,18 +788,15 @@ $result_clientes_filtro = $conn->query($sql_clientes_filtro);
 
 
 
-        // Ver detalle de venta (GLOBAL)
         function verDetalle(id) {
             window.location.href = 'detalle_venta.php?id=' + id;
         }
 
-        // Imprimir ticket (GLOBAL)
         function imprimirTicket(id) {
             window.open('detalle_venta.php?id=' + id, '_blank');
         }
 
 
-        // INICIALIZACIÓN AL CARGAR EL DOM
 
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM cargado, inicializando...');
@@ -837,7 +810,6 @@ $result_clientes_filtro = $conn->query($sql_clientes_filtro);
             console.log('✅ Select de productos encontrado');
             console.log('Opciones disponibles:', productoSelect.options.length);
 
-            // Event listener para seleccionar producto
             productoSelect.addEventListener('change', function() {
                 if (this.value) {
                     try {
@@ -852,7 +824,6 @@ $result_clientes_filtro = $conn->query($sql_clientes_filtro);
                 }
             });
 
-            // ⭐ Resetear modal al cerrar
             const modalVenta = document.getElementById('modalVenta');
             if (modalVenta) {
                 modalVenta.addEventListener('hidden.bs.modal', function() {
@@ -863,7 +834,6 @@ $result_clientes_filtro = $conn->query($sql_clientes_filtro);
                 });
             }
 
-            // ⭐ Validar formulario antes de enviar
             const formVenta = document.getElementById('formVenta');
             if (formVenta) {
                 formVenta.addEventListener('submit', function(e) {
@@ -891,7 +861,6 @@ $result_clientes_filtro = $conn->query($sql_clientes_filtro);
                         return false;
                     }
 
-                    // Verificar que productos_json tenga contenido
                     const productosJson = document.getElementById('productos_json').value;
                     if (!productosJson || productosJson === '' || productosJson === '[]') {
                         e.preventDefault();
@@ -906,7 +875,6 @@ $result_clientes_filtro = $conn->query($sql_clientes_filtro);
                         productos_json: productosJson
                     });
 
-                    // Mostrar loading
                     const btn = document.getElementById('btnGuardarVenta');
                     btn.disabled = true;
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
@@ -915,7 +883,6 @@ $result_clientes_filtro = $conn->query($sql_clientes_filtro);
                 });
             }
 
-            // Log inicial
             console.log('Script de ventas cargado correctamente');
             console.log('Carrito inicial:', carrito);
         });

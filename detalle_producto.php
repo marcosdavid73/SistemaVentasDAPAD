@@ -1,7 +1,6 @@
 <?php
 require_once 'config.php';
 
-// Verificar permisos (admin y repositor pueden acceder)
 requiere_permiso('productos');
 
 $producto_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
@@ -10,7 +9,6 @@ if ($producto_id === 0) {
     redirigir('productos.php');
 }
 
-// Procesar actualización de imagen
 $mensaje = '';
 $tipo_mensaje = '';
 
@@ -50,7 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_imagen']))
     }
 }
 
-// Obtener datos del producto
 $sql = "SELECT p.*, c.nombre as categoria_nombre 
         FROM productos p 
         LEFT JOIN categorias c ON p.categoria_id = c.id 

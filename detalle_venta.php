@@ -3,7 +3,6 @@ require_once 'config.php';
 
 $venta_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-// Obtener datos de la venta
 $sql_venta = "SELECT v.*, CONCAT(c.nombre, ' ', c.apellido) as cliente_nombre,
               c.dni, c.email, c.telefono, c.direccion,
               u.nombre as vendedor
@@ -21,7 +20,6 @@ if (!$venta) {
     exit();
 }
 
-// Obtener detalles de productos
 $sql_detalles = "SELECT dv.*, p.nombre as producto_nombre
                  FROM detalle_ventas dv
                  INNER JOIN productos p ON dv.producto_id = p.id
