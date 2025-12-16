@@ -1,6 +1,11 @@
 <?php
 require_once 'config.php';
 
+// Verificar sesión
+if (!esta_logueado()) {
+    redirigir('login.php');
+}
+
 // Obtener estadísticas generales
 $sql_total_ventas = "SELECT COUNT(*) as total FROM ventas WHERE estado='completada'";
 $total_ventas = $conn->query($sql_total_ventas)->fetch_assoc()['total'];
@@ -19,7 +24,7 @@ $sql_ventas_mes = "SELECT DATE_FORMAT(fecha_venta, '%Y-%m') as mes,
                    DATE_FORMAT(fecha_venta, '%b %Y') as mes_nombre,
                    SUM(total) as total 
                    FROM ventas WHERE estado='completada' 
-                   GROUP BY DATE_FORMAT(fecha_venta, '%Y-%m') 
+                   GROUP BY DATE_FORMAT(fecha_venta, '%Y-%m'), DATE_FORMAT(fecha_venta, '%b %Y')
                    ORDER BY mes DESC LIMIT 12";
 $result_ventas_mes = $conn->query($sql_ventas_mes);
 $ventas_mes = [];
@@ -73,19 +78,11 @@ while ($row = $result_metodos_pago->fetch_assoc()) {
     <title>Reportes - Sistema de Ventas</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style-minimal.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.umd.min.js"></script>
     <style>
-        :root {
-            --primary: #4e73df;
-            --success: #1cc88a;
-            --info: #36b9cc;
-            --warning: #f6c23e;
-            --danger: #e74a3b;
-        }
-
         body {
-            font-family: 'Nunito', sans-serif;
-            background-color: #f8f9fc;
+            background-color: var(--bg-secondary);
         }
 
         #wrapper {
@@ -95,7 +92,7 @@ while ($row = $result_metodos_pago->fetch_assoc()) {
         #sidebar-wrapper {
             min-height: 100vh;
             width: 224px;
-            background: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
+            background: var(--primary-color);
         }
 
         .sidebar-brand {

@@ -1,6 +1,9 @@
 <?php
 require_once 'config.php';
 
+// Verificar permisos (admin y vendedor pueden acceder)
+requiere_permiso('caja');
+
 // Procesar movimiento de caja
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
     if ($_POST['accion'] === 'nuevo_movimiento') {
@@ -66,18 +69,10 @@ $saldo_acumulado = $stmt_acum->get_result()->fetch_assoc()['saldo_acumulado'] ??
     <title>Caja - Sistema de Ventas</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style-minimal.css">
     <style>
-        :root {
-            --primary: #4e73df;
-            --success: #1cc88a;
-            --info: #36b9cc;
-            --warning: #f6c23e;
-            --danger: #e74a3b;
-        }
-
         body {
-            font-family: 'Nunito', sans-serif;
-            background-color: #f8f9fc;
+            background-color: var(--bg-secondary);
         }
 
         #wrapper {
@@ -87,7 +82,7 @@ $saldo_acumulado = $stmt_acum->get_result()->fetch_assoc()['saldo_acumulado'] ??
         #sidebar-wrapper {
             min-height: 100vh;
             width: 224px;
-            background: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
+            background: var(--primary-color);
         }
 
         .sidebar-brand {

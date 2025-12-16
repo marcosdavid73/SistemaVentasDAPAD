@@ -1,0 +1,159 @@
+# 📦 Sistema de Ventas - Guía de Instalación
+
+## 🚀 Requisitos Previos
+
+- **XAMPP/WAMP/MAMP** o servidor local con:
+  - PHP 7.4 o superior
+  - MySQL 5.7 o superior
+  - Apache 2.4 o superior
+
+## 📋 Pasos de Instalación
+
+### 1. Configurar el Servidor Local
+
+1. Instala XAMPP desde [https://www.apachefriends.org/](https://www.apachefriends.org/)
+2. Inicia los servicios **Apache** y **MySQL** desde el panel de control de XAMPP
+
+### 2. Importar la Base de Datos
+
+1. Abre tu navegador y ve a [http://localhost/phpmyadmin](http://localhost/phpmyadmin)
+2. Haz clic en **"Nueva"** en el panel izquierdo
+3. Nombre de la base de datos: `sistema_ventas`
+4. Cotejamiento: `utf8mb4_general_ci`
+5. Haz clic en **"Crear"**
+6. Selecciona la base de datos `sistema_ventas`
+7. Ve a la pestaña **"Importar"**
+8. Haz clic en **"Seleccionar archivo"** y busca el archivo `sistema_ventas.sql`
+9. Haz clic en **"Continuar"**
+10. Espera a que termine la importación ✅
+
+### 3. Configurar la Conexión a la Base de Datos
+
+El archivo `config.php` ya está configurado con los valores predeterminados:
+
+```php
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+define('DB_NAME', 'sistema_ventas');
+```
+
+**Si tu configuración es diferente:**
+- Abre el archivo `config.php`
+- Modifica los valores según tu configuración de MySQL
+
+### 4. Colocar los Archivos en el Servidor
+
+1. Copia toda la carpeta del proyecto
+2. Pégala en la carpeta `htdocs` de XAMPP
+   - Windows: `C:\xampp\htdocs\sistema`
+   - Mac: `/Applications/XAMPP/htdocs/sistema`
+   - Linux: `/opt/lampp/htdocs/sistema`
+
+### 5. Acceder al Sistema
+
+Abre tu navegador y ve a:
+```
+http://localhost/sistema/login.php
+```
+
+## 🔐 Credenciales de Acceso
+
+**Usuario administrador por defecto:**
+- **Email:** `admin@sistema.com`
+- **Contraseña:** `admin123`
+
+> ⚠️ **IMPORTANTE:** Cambia la contraseña después del primer inicio de sesión
+
+## 📊 Estructura de la Base de Datos
+
+El sistema incluye las siguientes tablas:
+
+- ✅ `usuarios` - Gestión de usuarios del sistema
+- ✅ `clientes` - Registro de clientes
+- ✅ `productos` - Catálogo de productos
+- ✅ `categorias` - Categorías de productos
+- ✅ `ventas` - Registro de ventas
+- ✅ `detalle_ventas` - Detalles de cada venta
+- ✅ `facturas` - Facturación
+- ✅ `detalle_facturas` - Detalles de facturas
+- ✅ `proveedores` - Gestión de proveedores
+- ✅ `compras` - Registro de compras
+- ✅ `detalle_compras` - Detalles de compras
+- ✅ `cuentas_corrientes` - Cuentas corrientes de clientes
+- ✅ `movimientos_caja` - Movimientos de caja
+- ✅ `gastos` - Registro de gastos
+- ✅ `pagos` - Gestión de pagos
+
+## 🛠️ Solución de Problemas
+
+### Error: "No se puede conectar a la base de datos"
+- Verifica que MySQL esté activo en XAMPP
+- Verifica que las credenciales en `config.php` sean correctas
+- Asegúrate de que la base de datos `sistema_ventas` exista
+
+### Error: "Página en blanco"
+- Verifica que Apache esté activo
+- Revisa los logs de error de PHP en: `xampp/apache/logs/error.log`
+- Habilita la visualización de errores en `php.ini`:
+  ```ini
+  display_errors = On
+  error_reporting = E_ALL
+  ```
+
+### Error: "Call to undefined function..."
+- Verifica que las extensiones de PHP estén habilitadas en `php.ini`:
+  - `extension=mysqli`
+  - `extension=mbstring`
+
+### No redirige al login
+- Asegúrate de que `session_start()` esté funcionando
+- Verifica permisos de escritura en la carpeta de sesiones
+
+## 📱 Módulos del Sistema
+
+- 📊 **Dashboard** - Resumen general de ventas y estadísticas
+- 👥 **Clientes** - Gestión de clientes
+- 📦 **Productos** - Administración de productos e inventario
+- 🛒 **Ventas** - Punto de venta
+- 📄 **Facturas** - Facturación y comprobantes
+- 🏢 **Proveedores** - Gestión de proveedores
+- 💰 **Caja** - Movimientos de caja
+- 💳 **Cuentas Corrientes** - Estado de cuenta de clientes
+- 📈 **Reportes** - Informes y estadísticas
+
+## 🔧 Configuración Adicional
+
+### Cambiar la Zona Horaria
+En `config.php`, puedes agregar:
+```php
+date_default_timezone_set('America/Argentina/Buenos_Aires');
+```
+
+### Habilitar Modo Debug
+Para ver errores detallados, descomenta en `config.php`:
+```php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+```
+
+## 📞 Soporte
+
+Si encuentras algún error:
+1. Verifica los logs de Apache: `xampp/apache/logs/error.log`
+2. Revisa los errores de PHP en tu navegador (F12 → Console)
+3. Asegúrate de que todos los archivos se hayan copiado correctamente
+
+## ✅ Checklist de Instalación
+
+- [ ] XAMPP instalado y servicios activos
+- [ ] Base de datos `sistema_ventas` creada
+- [ ] Archivo SQL importado correctamente
+- [ ] Archivos copiados en `htdocs`
+- [ ] `config.php` configurado
+- [ ] Login accesible desde el navegador
+- [ ] Credenciales de prueba funcionando
+
+---
+
+**¡Listo! El sistema ya está funcionando.** 🎉

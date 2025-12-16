@@ -3,7 +3,7 @@ session_start();
 
 // Si ya está logueado, redirigir al dashboard
 if (isset($_SESSION['usuario_id'])) {
-    header("Location: index.php");
+    header("Location: dashboard.php");
     exit();
 }
 
@@ -45,14 +45,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Verificar contraseña
             if (password_verify($password, $usuario['password'])) {
-                // Login exitoso
-                $_SESSION['usuario_id'] = $usuario['id'];
-                $_SESSION['usuario_nombre'] = $usuario['nombre'];
-                $_SESSION['usuario_email'] = $usuario['email'];
-                $_SESSION['rol'] = $usuario['rol'];
+                // Verificar si el usuario está activo
+                if ($usuario['estado'] == 0) {
+                    $error = 'Tu cuenta ha sido desactivada. Contacta al administrador.';
+                } else {
+                    // Login exitoso
+                    $_SESSION['usuario_id'] = $usuario['id'];
+                    $_SESSION['usuario_nombre'] = $usuario['nombre'];
+                    $_SESSION['usuario_email'] = $usuario['email'];
+                    $_SESSION['rol'] = $usuario['rol'];
 
-                header("Location: index.php");
-                exit();
+                    // Actualizar último acceso
+                    $update_sql = "UPDATE usuarios SET ultimo_acceso = NOW() WHERE id = ?";
+                    $update_stmt = $conn->prepare($update_sql);
+                    $update_stmt->bind_param("i", $usuario['id']);
+                    $update_stmt->execute();
+
+                    header("Location: dashboard.php");
+                    exit();
+                }
             } else {
                 $error = 'Contraseña incorrecta';
             }
@@ -73,18 +84,14 @@ $conn->close();
     <title>Login - Sistema de Ventas</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style-minimal.css">
     <style>
-        :root {
-            --primary: #4e73df;
-        }
-
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-secondary);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Nunito', sans-serif;
         }
 
         .login-container {
@@ -93,28 +100,22 @@ $conn->close();
             padding: 20px;
         }
 
-        .card {
-            border: none;
-            border-radius: 1rem;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-        }
-
         .card-header {
-            background: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
-            color: white;
-            border-radius: 1rem 1rem 0 0 !important;
+            background: var(--primary-color);
+            color: var(--text-white);
+            border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0 !important;
             padding: 2rem;
             text-align: center;
         }
 
         .card-header h1 {
             margin: 0;
-            font-size: 2rem;
-            font-weight: 800;
+            font-size: 1.75rem;
+            font-weight: 700;
         }
 
         .card-header .icon {
-            font-size: 3rem;
+            font-size: 2.5rem;
             margin-bottom: 1rem;
         }
 
@@ -122,39 +123,16 @@ $conn->close();
             padding: 2.5rem;
         }
 
-        .form-control {
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            border: 1px solid #d1d3e2;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
-        }
-
         .input-group-text {
-            background-color: #f8f9fc;
-            border: 1px solid #d1d3e2;
-            color: #858796;
+            background-color: var(--gray-50);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
         }
 
         .btn-primary {
-            background: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
-            border: none;
-            padding: 0.75rem;
-            font-weight: 700;
-            border-radius: 0.5rem;
-            transition: all 0.3s;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0.5rem 1rem rgba(78, 115, 223, 0.3);
-        }
-
-        .alert {
-            border-radius: 0.5rem;
+            width: 100%;
+            padding: 0.85rem;
+            font-weight: 600;
         }
 
         .login-info {
@@ -263,6 +241,12 @@ $conn->close();
                             <i class="fas fa-magic"></i> Autocompletar
                         </button>
                     </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="index.php" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver al Catálogo
+                    </a>
                 </div>
             </div>
         </div>

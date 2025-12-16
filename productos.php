@@ -1,6 +1,9 @@
 <?php
 require_once 'config.php';
 
+// Verificar permisos (admin y repositor pueden acceder)
+requiere_permiso('productos');
+
 // Procesar acciones (Crear, Editar, Eliminar)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['accion'])) {
@@ -12,10 +15,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $precio = floatval($_POST['precio']);
             $stock = intval($_POST['stock']);
             $categoria_id = intval($_POST['categoria_id']);
+            
+            // Procesar imagen
+            $imagen = null;
+            if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === 0) {
+                $allowed = ['jpg', 'jpeg', 'png', 'gif'];
+                $filename = $_FILES['imagen']['name'];
+                $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+                
+                if (in_array($ext, $allowed) && $_FILES['imagen']['size'] <= 2097152) { // 2MB
+                    $new_filename = uniqid() . '.' . $ext;
+                    $upload_dir = 'uploads/productos/';
+                    
+                    if (!is_dir($upload_dir)) {
+                        mkdir($upload_dir, 0777, true);
+                    }
+                    
+                    if (move_uploaded_file($_FILES['imagen']['tmp_name'], $upload_dir . $new_filename)) {
+                        $imagen = $upload_dir . $new_filename;
+                    }
+                }
+            }
 
-            $sql = "INSERT INTO productos (nombre, descripcion, precio, stock, categoria_id) VALUES (?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO productos (nombre, descripcion, imagen, precio, stock, categoria_id) VALUES (?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ssdii", $nombre, $descripcion, $precio, $stock, $categoria_id);
+            $stmt->bind_param("sssdii", $nombre, $descripcion, $imagen, $precio, $stock, $categoria_id);
 
             if ($stmt->execute()) {
                 $mensaje = "Producto creado exitosamente";
@@ -33,10 +57,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $precio = floatval($_POST['precio']);
             $stock = intval($_POST['stock']);
             $categoria_id = intval($_POST['categoria_id']);
+            
+            // Procesar nueva imagen si se subió
+            $imagen_sql = "";
+            $imagen_param = null;
+            if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === 0) {
+                $allowed = ['jpg', 'jpeg', 'png', 'gif'];
+                $filename = $_FILES['imagen']['name'];
+                $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+                
+                if (in_array($ext, $allowed) && $_FILES['imagen']['size'] <= 2097152) {
+                    $new_filename = uniqid() . '.' . $ext;
+                    $upload_dir = 'uploads/productos/';
+                    
+                    if (!is_dir($upload_dir)) {
+                        mkdir($upload_dir, 0777, true);
+                    }
+                    
+                    if (move_uploaded_file($_FILES['imagen']['tmp_name'], $upload_dir . $new_filename)) {
+                        $imagen_param = $upload_dir . $new_filename;
+                        $imagen_sql = ", imagen=?";
+                    }
+                }
+            }
 
-            $sql = "UPDATE productos SET nombre=?, descripcion=?, precio=?, stock=?, categoria_id=? WHERE id=?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ssdiii", $nombre, $descripcion, $precio, $stock, $categoria_id, $id);
+            if ($imagen_param) {
+                $sql = "UPDATE productos SET nombre=?, descripcion=?, precio=?, stock=?, categoria_id=?" . $imagen_sql . " WHERE id=?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ssdisi", $nombre, $descripcion, $precio, $stock, $categoria_id, $imagen_param, $id);
+            } else {
+                $sql = "UPDATE productos SET nombre=?, descripcion=?, precio=?, stock=?, categoria_id=? WHERE id=?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ssdiii", $nombre, $descripcion, $precio, $stock, $categoria_id, $id);
+            }
 
             if ($stmt->execute()) {
                 $mensaje = "Producto actualizado exitosamente";
@@ -78,8 +131,12 @@ $sql_productos = "SELECT p.*, c.nombre as categoria_nombre FROM productos p
                   ORDER BY p.stock ASC, p.id DESC";
 $result_productos = $conn->query($sql_productos);
 
-// Obtener categorías para el select
-$sql_categorias = "SELECT * FROM categorias WHERE estado=1";
+// Obtener categorías para el select (con iconos)
+$sql_categorias = "SELECT c.*, ci.icono 
+                   FROM categorias c 
+                   LEFT JOIN categorias_iconos ci ON c.id = ci.categoria_id 
+                   WHERE c.estado=1 
+                   ORDER BY c.nombre";
 $result_categorias = $conn->query($sql_categorias);
 ?>
 <!DOCTYPE html>
@@ -91,18 +148,10 @@ $result_categorias = $conn->query($sql_categorias);
     <title>Productos - Sistema de Ventas</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style-minimal.css">
     <style>
-        :root {
-            --primary: #4e73df;
-            --success: #1cc88a;
-            --info: #36b9cc;
-            --warning: #f6c23e;
-            --danger: #e74a3b;
-        }
-
         body {
-            font-family: 'Nunito', sans-serif;
-            background-color: #f8f9fc;
+            background-color: var(--bg-secondary);
         }
 
         #wrapper {
@@ -112,7 +161,7 @@ $result_categorias = $conn->query($sql_categorias);
         #sidebar-wrapper {
             min-height: 100vh;
             width: 224px;
-            background: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
+            background: var(--primary-color);
         }
 
         .sidebar-brand {
@@ -195,6 +244,38 @@ $result_categorias = $conn->query($sql_categorias);
             animation: pulseWarning 2s ease-in-out infinite;
         }
 
+        .stock-critico {
+            background-color: #fee !important;
+            border-left: 4px solid var(--danger) !important;
+        }
+
+        .stock-bajo {
+            background-color: #fff9e6 !important;
+            border-left: 4px solid var(--warning) !important;
+        }
+
+        .alert-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
         @keyframes pulseWarning {
 
             0%,
@@ -244,8 +325,11 @@ $result_categorias = $conn->query($sql_categorias);
             <hr class="sidebar-divider" style="border-color: rgba(255,255,255,.2)">
             <div class="sidebar-heading">Gestión</div>
             <li class="nav-item">
-                <a class="nav-link active" href="productos.php">
+                <a class="nav-link active" href="productos.php" style="position: relative;">
                     <i class="fas fa-fw fa-box"></i><span>Productos</span>
+                    <?php if ($stock_critico + $stock_bajo > 0): ?>
+                        <span class="alert-badge"><?php echo $stock_critico + $stock_bajo; ?></span>
+                    <?php endif; ?>
                 </a>
             </li>
             <li class="nav-item">
@@ -451,10 +535,13 @@ $result_categorias = $conn->query($sql_categorias);
                                                 </span>
                                             </td>
                                             <td>
-                                                <button class="btn btn-info btn-sm" onclick="editarProducto(<?php echo htmlspecialchars(json_encode($row)); ?>)">
+                                                <button class="btn btn-primary btn-sm me-1" onclick="verDetalleProducto(<?php echo $row['id']; ?>)" title="Ver detalle">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-info btn-sm me-1" onclick="editarProducto(<?php echo htmlspecialchars(json_encode($row)); ?>)" title="Editar">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
-                                                <button class="btn btn-danger btn-sm" onclick="eliminarProducto(<?php echo $row['id']; ?>)">
+                                                <button class="btn btn-danger btn-sm" onclick="eliminarProducto(<?php echo $row['id']; ?>)" title="Eliminar">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </td>
@@ -477,7 +564,7 @@ $result_categorias = $conn->query($sql_categorias);
                     <h5 class="modal-title" id="modalTitle">Nuevo Producto</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form method="POST" id="formProducto">
+                <form method="POST" id="formProducto" enctype="multipart/form-data">
                     <div class="modal-body">
                         <input type="hidden" name="accion" id="accion" value="crear">
                         <input type="hidden" name="id" id="producto_id">
@@ -490,6 +577,13 @@ $result_categorias = $conn->query($sql_categorias);
                         <div class="mb-3">
                             <label class="form-label">Descripción</label>
                             <textarea class="form-control" name="descripcion" id="descripcion" rows="3"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Imagen del Producto</label>
+                            <input type="file" class="form-control" name="imagen" id="imagen" accept="image/*">
+                            <small class="text-muted">Formatos: JPG, PNG, GIF (máx. 2MB)</small>
+                            <div id="preview_imagen" class="mt-2"></div>
                         </div>
 
                         <div class="mb-3">
@@ -539,6 +633,11 @@ $result_categorias = $conn->query($sql_categorias);
             document.getElementById('stock').value = producto.stock;
 
             new bootstrap.Modal(document.getElementById('modalProducto')).show();
+        }
+
+        function verDetalleProducto(id) {
+            // Redirigir a página de detalle
+            window.location.href = 'detalle_producto.php?id=' + id;
         }
 
         function eliminarProducto(id) {
